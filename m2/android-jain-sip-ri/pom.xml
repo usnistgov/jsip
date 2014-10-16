@@ -60,6 +60,10 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.8.1</version>
+				<configuration>
+					  <sourcepath>${basedir}/../../src/android</sourcepath>
+					<includePackageNames>android.*</includePackageNames>
+				</configuration>
 				<executions>
 				        <execution>
 				            <id>attach-javadocs</id>
@@ -96,9 +100,15 @@
 			<resource>
 				<directory>target</directory>
 				<includes>
-					<include>com/telestax/**</include>
-					<include>javax/**</include>
+					<include>gov/nist/javax/sip/**</include>
+					<include>gov/nist/javax/sdp/**</include>
+					<include>gov/nist/core/**</include>
+					<include>javax/sdp/**</include>
+					<include>javax/sip/**</include>
 				</includes>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
 			</resource>
 		</resources>		
 	</build>
