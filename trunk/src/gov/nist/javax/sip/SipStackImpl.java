@@ -549,8 +549,8 @@ import javax.sip.message.Request;
  * 
  *  <li><b>gov.nist.javax.sip.TLS_CLIENT_PROTOCOLS = String </b>
  *  Comma-separated list of protocols to use when creating outgoing TLS connections.
- *  The default is "SSLv3, SSLv2Hello, TLSv1".
- *  Some servers do not support SSLv2Hello, so override to "SSLv3, TLSv1". 
+ *  The default is "TLSv1.2, TLSv1.1, TLSv1".
+ *  It's advisable not to use SSL protocols because of http://googleonlinesecurity.blogspot.fr/2014/10/this-poodle-bites-exploiting-ssl-30.html 
  * </li>
  * 
  * <li><b>gov.nist.javax.sip.TLS_SECURITY_POLICY = String </b> The fully qualified path
@@ -647,8 +647,9 @@ public class SipStackImpl extends SIPTransactionStack implements
 
 	// Supported protocols for TLS client: can be overridden by application
 	private String[] enabledProtocols = {
-			"SSLv3",
-			"SSLv2Hello",
+			// https://java.net/jira/browse/JSIP-482 defaulting only TLS protocols and not SSL anymore
+			"TLSv1.2",
+			"TLSv1.1",
 			"TLSv1"
 	};
 
@@ -1869,8 +1870,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 	 * guarantee that it will work.<br>
 	 * The stack has a default protocol suite of:
 	 * <ul>
-	 * <li>SSLv3</li>
-	 * <li>SSLv2Hello</li>
+	 * <li>TLSv1.2</li>
+	 * <li>TLSv1.1</li>
 	 * <li>TLSv1</li>
 	 * </ul>
 	 * 
