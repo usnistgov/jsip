@@ -1,9 +1,9 @@
 package examples.simplecallsetup;
 
-import javax.sip.*;
-import javax.sip.address.*;
-import javax.sip.header.*;
-import javax.sip.message.*;
+import android.javax.sip.*;
+import android.javax.sip.address.*;
+import android.javax.sip.header.*;
+import android.javax.sip.message.*;
 
 import java.text.ParseException;
 import java.util.*;
@@ -185,7 +185,7 @@ public class Shootist implements SipListener {
 
     }
 
-    public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
+    public void processTimeout(android.javax.sip.TimeoutEvent timeoutEvent) {
 
         System.out.println("Transaction Time out");
     }
@@ -206,34 +206,34 @@ public class Shootist implements SipListener {
         SipFactory sipFactory = null;
         sipStack = null;
         sipFactory = SipFactory.getInstance();
-        sipFactory.setPathName("gov.nist");
+        sipFactory.setPathName("android.gov.nist");
         Properties properties = new Properties();
         // If you want to try TCP transport change the following to
         String transport = "udp";
         String peerHostPort = "127.0.0.1:5070";
         // String peerHostPort = "230.0.0.1:5070";
-        properties.setProperty("javax.sip.OUTBOUND_PROXY", peerHostPort + "/"
+        properties.setProperty("android.javax.sip.OUTBOUND_PROXY", peerHostPort + "/"
                 + transport);
         // If you want to use UDP then uncomment this.
-        properties.setProperty("javax.sip.STACK_NAME", "shootist");
+        properties.setProperty("android.javax.sip.STACK_NAME", "shootist");
 
         // The following properties are specific to nist-sip
         // and are not necessarily part of any other jain-sip
         // implementation.
         // You can set a max message size for tcp transport to
         // guard against denial of service attack.
-        properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
+        properties.setProperty("android.gov.nist.android.javax.sip.DEBUG_LOG",
                 "shootistdebug.txt");
-        properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
+        properties.setProperty("android.gov.nist.android.javax.sip.SERVER_LOG",
                 "shootistlog.txt");
 
         // Drop the client connection after we are done with the transaction.
-        properties.setProperty("gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS",
+        properties.setProperty("android.gov.nist.android.javax.sip.CACHE_CLIENT_CONNECTIONS",
                 "false");
         // Set to 0 (or NONE) in your production code for max speed.
         // You need 16 (or TRACE) for logging traces. 32 (or DEBUG) for debug + traces.
         // Your code will limp at 32 but it is best for debugging.
-        properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "DEBUG");
+        properties.setProperty("android.gov.nist.android.javax.sip.TRACE_LEVEL", "DEBUG");
 
         try {
             // Create SipStack object
@@ -241,7 +241,7 @@ public class Shootist implements SipListener {
             System.out.println("createSipStack " + sipStack);
         } catch (PeerUnavailableException e) {
             // could not find
-            // gov.nist.jain.protocol.ip.sip.SipStackImpl
+            // android.gov.nist.jain.protocol.ip.sip.SipStackImpl
             // in the classpath
             e.printStackTrace();
             System.err.println(e.getMessage());

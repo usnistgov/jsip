@@ -1,9 +1,9 @@
 package examples.simplecallsetup;
 
-import javax.sip.*;
-import javax.sip.address.*;
-import javax.sip.header.*;
-import javax.sip.message.*;
+import android.javax.sip.*;
+import android.javax.sip.address.*;
+import android.javax.sip.header.*;
+import android.javax.sip.message.*;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
@@ -237,7 +237,7 @@ public class Shootme implements SipListener {
         }
     }
 
-    public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
+    public void processTimeout(android.javax.sip.TimeoutEvent timeoutEvent) {
         Transaction transaction;
         if (timeoutEvent.isServerTransaction()) {
             transaction = timeoutEvent.getServerTransaction();
@@ -264,15 +264,15 @@ public class Shootme implements SipListener {
         SipFactory sipFactory = null;
         sipStack = null;
         sipFactory = SipFactory.getInstance();
-        sipFactory.setPathName("gov.nist");
+        sipFactory.setPathName("android.gov.nist");
         Properties properties = new Properties();
-        properties.setProperty("javax.sip.STACK_NAME", "shootme");
+        properties.setProperty("android.javax.sip.STACK_NAME", "shootme");
         // You need 16 for logging traces. 32 for debug + traces.
         // Your code will limp at 32 but it is best for debugging.
-        properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "LOG4J");
-        properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
+        properties.setProperty("android.gov.nist.javax.sip.TRACE_LEVEL", "LOG4J");
+        properties.setProperty("android.gov.nist.javax.sip.DEBUG_LOG",
                 "shootmedebug.txt");
-        properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
+        properties.setProperty("android.gov.nist.javax.sip.SERVER_LOG",
                 "shootmelog.txt");
 
         try {
@@ -281,7 +281,7 @@ public class Shootme implements SipListener {
             System.out.println("sipStack = " + sipStack);
         } catch (PeerUnavailableException e) {
             // could not find
-            // gov.nist.jain.protocol.ip.sip.SipStackImpl
+            // android.gov.nist.jain.protocol.ip.sip.SipStackImpl
             // in the classpath
             e.printStackTrace();
             System.err.println(e.getMessage());
