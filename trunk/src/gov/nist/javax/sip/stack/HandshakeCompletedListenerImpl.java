@@ -23,6 +23,8 @@ import gov.nist.core.StackLogger;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.channels.SocketChannel;
+import java.security.cert.Certificate;
 
 import javax.net.ssl.HandshakeCompletedEvent;
 import javax.net.ssl.HandshakeCompletedListener;
@@ -35,12 +37,25 @@ public class HandshakeCompletedListenerImpl implements HandshakeCompletedListene
 
     private HandshakeWatchdog watchdog;
     private SIPTransactionStack sipStack;
+    
+    // Added for https://java.net/jira/browse/JSIP-483, NIO doesn't provide a HandshakeCompletedEvent 
+    private Certificate[] peerCertificates;
+    private Certificate[] localCertificates;
+    private String cipherSuite;
 
     public HandshakeCompletedListenerImpl(TLSMessageChannel tlsMessageChannel, Socket socket) {
         tlsMessageChannel.setHandshakeCompletedListener(this);
         sipStack = tlsMessageChannel.getSIPStack();
         if(sipStack.getSslHandshakeTimeout() > 0) {
         	this.watchdog = new HandshakeWatchdog(socket);        	
+        }
+    }
+    
+    public HandshakeCompletedListenerImpl(NioTlsMessageChannel tlsMessageChannel, SocketChannel socket) {
+        tlsMessageChannel.setHandshakeCompletedListener(this);
+        sipStack = tlsMessageChannel.getSIPStack();
+        if(sipStack.getSslHandshakeTimeout() > 0) {
+        	this.watchdog = new HandshakeWatchdog(socket.socket());        	
         }
     }
 
@@ -83,7 +98,52 @@ public class HandshakeCompletedListenerImpl implements HandshakeCompletedListene
     }
 
     
-    class HandshakeWatchdog extends SIPStackTimerTask {
+    /**
+	 * @return the peerCertificates
+	 */
+	public Certificate[] getPeerCertificates() {
+		return peerCertificates;
+	}
+
+	/**
+	 * @param peerCertificates the peerCertificates to set
+	 */
+	public void setPeerCertificates(Certificate[] peerCertificates) {
+		this.peerCertificates = peerCertificates;
+	}
+
+
+	/**
+	 * @return the cipherSuite
+	 */
+	public String getCipherSuite() {
+		return cipherSuite;
+	}
+
+	/**
+	 * @param cipherSuite the cipherSuite to set
+	 */
+	public void setCipherSuite(String cipherSuite) {
+		this.cipherSuite = cipherSuite;
+	}
+
+
+	/**
+	 * @return the localCertificates
+	 */
+	public Certificate[] getLocalCertificates() {
+		return localCertificates;
+	}
+
+	/**
+	 * @param localCertificates the localCertificates to set
+	 */
+	public void setLocalCertificates(Certificate[] localCertificates) {
+		this.localCertificates = localCertificates;
+	}
+
+
+	class HandshakeWatchdog extends SIPStackTimerTask {
     	Socket  socket;
     	 
     	private HandshakeWatchdog(Socket socket) {
@@ -102,4 +162,6 @@ public class HandshakeCompletedListenerImpl implements HandshakeCompletedListene
 		}
     	
     }
+
+
 }

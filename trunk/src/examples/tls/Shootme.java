@@ -1,13 +1,37 @@
-    package examples.tls;
+package examples.tls;
 import gov.nist.javax.sip.TransactionExt;
-
-import javax.sip.*;
-import javax.sip.address.*;
-import javax.sip.header.*;
-import javax.sip.message.*;
+import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
 
 import java.security.cert.Certificate;
-import java.util.*;
+import java.util.Properties;
+
+import javax.sip.ClientTransaction;
+import javax.sip.Dialog;
+import javax.sip.DialogTerminatedEvent;
+import javax.sip.IOExceptionEvent;
+import javax.sip.ListeningPoint;
+import javax.sip.PeerUnavailableException;
+import javax.sip.RequestEvent;
+import javax.sip.ResponseEvent;
+import javax.sip.ServerTransaction;
+import javax.sip.SipFactory;
+import javax.sip.SipListener;
+import javax.sip.SipProvider;
+import javax.sip.SipStack;
+import javax.sip.Transaction;
+import javax.sip.TransactionTerminatedEvent;
+import javax.sip.address.Address;
+import javax.sip.address.AddressFactory;
+import javax.sip.header.CSeqHeader;
+import javax.sip.header.ContactHeader;
+import javax.sip.header.ContentTypeHeader;
+import javax.sip.header.HeaderFactory;
+import javax.sip.header.ToHeader;
+import javax.sip.message.MessageFactory;
+import javax.sip.message.Request;
+import javax.sip.message.Response;
+
+import test.unit.gov.nist.javax.sip.stack.tls.TlsTest;
 
 /**
  * This class is a UAC template. Shootist is the guy that shoots and shootme
@@ -148,8 +172,10 @@ public class Shootme implements SipListener {
             Certificate[] certs = stExt.getPeerCertificates();
             System.out.println("Certs = " + certs);
             
-            for (Certificate cert: certs ) {
-                System.out.println("Cert = " + cert);
+            if(certs != null) {
+	            for (Certificate cert: certs ) {
+	                System.out.println("Cert = " + cert);
+	            }
             }
   
             response = messageFactory.createResponse(200, request);
@@ -255,6 +281,7 @@ public class Shootme implements SipListener {
         // Guard against starvation.
         properties.setProperty(
             "gov.nist.javax.sip.READ_TIMEOUT", "1000");
+//        properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
         // Test for ttp://code.google.com/p/jain-sip/issues/detail?id=18 NIO Message with no Call-ID throws NPE
 //        properties.setProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE", "10");
   
@@ -294,6 +321,10 @@ public class Shootme implements SipListener {
     }
 
     public static void main(String args[]) {
+    	System.setProperty( "javax.net.ssl.keyStore",  TlsTest.class.getResource("testkeys").getPath() );
+        System.setProperty( "javax.net.ssl.trustStore", TlsTest.class.getResource("testkeys").getPath() );
+        System.setProperty( "javax.net.ssl.keyStorePassword", "passphrase" );
+        System.setProperty( "javax.net.ssl.keyStoreType", "jks" );
         new Shootme().init();
     }
 

@@ -1326,6 +1326,11 @@ public abstract class SIPTransactionImpl implements SIPTransaction {
             else if ( ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent() == null)
                 return null;
             else return ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent().getCipherSuite();
+        } // Added for https://java.net/jira/browse/JSIP-483 
+        else if (this.getMessageChannel() instanceof NioTlsMessageChannel) {
+            if (  ((NioTlsMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener() == null ) 
+                return null;
+            else return ((NioTlsMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getCipherSuite();
         } else throw new UnsupportedOperationException("Not a TLS channel");
 
     }
@@ -1342,6 +1347,11 @@ public abstract class SIPTransactionImpl implements SIPTransaction {
             else if ( ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent() == null)
                 return null;
             else return ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent().getLocalCertificates();
+        } // Added for https://java.net/jira/browse/JSIP-483
+        else if (this.getMessageChannel() instanceof NioTlsMessageChannel) {
+            if (  ((NioTlsMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener() == null ) 
+                return null;
+            else return ((NioTlsMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getLocalCertificates();
         } else throw new UnsupportedOperationException("Not a TLS channel");
     }
 
@@ -1357,6 +1367,11 @@ public abstract class SIPTransactionImpl implements SIPTransaction {
             else if ( ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent() == null)
                 return null;
             else return ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent().getPeerCertificates();
+        } // Added for https://java.net/jira/browse/JSIP-483 
+        else if(this.getMessageChannel() instanceof NioTlsMessageChannel) {
+        	if (  ((NioTlsMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener() == null ) 
+                return null;
+            else return ((NioTlsMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getPeerCertificates();
         } else throw new UnsupportedOperationException("Not a TLS channel");
 
     }
@@ -1366,7 +1381,7 @@ public abstract class SIPTransactionImpl implements SIPTransaction {
      */
     @Override
     public List<String> extractCertIdentities() throws SSLPeerUnverifiedException {
-        if (this.getMessageChannel() instanceof TLSMessageChannel) {
+        if (this.getMessageChannel() instanceof TLSMessageChannel || this.getMessageChannel() instanceof NioTlsMessageChannel) {
             List<String> certIdentities = new ArrayList<String>();
             Certificate[] certs = getPeerCertificates();
             if (certs == null) {

@@ -32,8 +32,11 @@ import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.SipStackImpl;
 import gov.nist.javax.sip.stack.SSLStateMachine.MessageSendCallback;
 
+import javax.net.ssl.HandshakeCompletedListener;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -47,6 +50,9 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel implements NioTls
 			.getLogger(NioTlsMessageChannel.class);
 	
 	SSLStateMachine sslStateMachine;
+	// Added for https://java.net/jira/browse/JSIP-483
+	private HandshakeCompletedListener handshakeCompletedListener;
+	private boolean handshakeCompleted = false;
 
 	private int appBufferMax;
 	private int netBufferMax;
@@ -103,7 +109,11 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel implements NioTls
 
         // http://java.net/jira/browse/JSIP-451 - josemrecio
     	sslStateMachine.sslEngine.setEnabledProtocols(((SipStackImpl)sipStack).getEnabledProtocols());
-
+    	// Added for https://java.net/jira/browse/JSIP-483 
+		if(getHandshakeCompletedListener() == null) {
+			HandshakeCompletedListenerImpl listner = new HandshakeCompletedListenerImpl(this, getSocketChannel());
+			setHandshakeCompletedListener(listner);
+		}
 	}
 	
 	public ByteBuffer prepareEncryptedDataBuffer() {
@@ -251,5 +261,36 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel implements NioTls
 	public void addPlaintextBytes(byte[] bytes) throws Exception {
 		nioParser.addBytes(bytes);
 	}
+	
+	// Methods below Added for https://java.net/jira/browse/JSIP-483 
+	public void setHandshakeCompletedListener(
+            HandshakeCompletedListener handshakeCompletedListenerImpl) {
+        this.handshakeCompletedListener = handshakeCompletedListenerImpl;
+    }
 
+    /**
+     * @return the handshakeCompletedListener
+     */
+    public HandshakeCompletedListenerImpl getHandshakeCompletedListener() {
+        return (HandshakeCompletedListenerImpl) handshakeCompletedListener;
+    }  
+    
+	/**
+	 * @return the handshakeCompleted
+	 */
+	public boolean isHandshakeCompleted() {
+		return handshakeCompleted;
+	}
+
+	/**
+	 * @param handshakeCompleted the handshakeCompleted to set
+	 */
+	public void setHandshakeCompleted(boolean handshakeCompleted) {
+		this.handshakeCompleted = handshakeCompleted;
+	}
+	
+	@Override
+	public SipStackImpl getSIPStack() {
+		return (SipStackImpl) super.getSIPStack();
+	}
 }
