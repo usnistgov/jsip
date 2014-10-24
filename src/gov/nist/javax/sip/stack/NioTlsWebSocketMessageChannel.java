@@ -353,4 +353,8 @@ public class NioTlsWebSocketMessageChannel extends NioWebSocketMessageChannel im
 		super.addBytes(bytes);
 	}
 
+	@Override
+	public SipStackImpl getSIPStack() {
+		return (SipStackImpl) super.getSIPStack();
+	}
 }

@@ -25,6 +25,9 @@
  */
 package gov.nist.javax.sip.stack;
 
+import gov.nist.javax.sip.ClientTransactionExt;
+import gov.nist.javax.sip.SipStackImpl;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 /**
@@ -55,4 +58,14 @@ public interface NioTlsChannelInterface {
 	 * @throws Exception
 	 */
 	void addPlaintextBytes(byte[] bytes) throws Exception;
+	/**
+	 * Returns the SIP Stack associated with this channel 
+	 * @return
+	 */
+	SipStackImpl getSIPStack();
+	/**
+	 * Returns the Client Transaction associated with this channel
+	 * @return
+	 */
+	ClientTransactionExt getEncapsulatedClientTransaction();
 }

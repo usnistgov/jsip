@@ -1,6 +1,7 @@
 package examples.tls;
 import gov.nist.javax.sip.ClientTransactionExt;
 import gov.nist.javax.sip.TlsSecurityPolicy;
+import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
 import gov.nist.javax.sip.stack.SIPTransaction;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
@@ -8,6 +9,8 @@ import javax.sip.*;
 import javax.sip.address.*;
 import javax.sip.header.*;
 import javax.sip.message.*;
+
+import test.unit.gov.nist.javax.sip.stack.tls.TlsTest;
 
 import java.io.IOException;
 import java.security.cert.Certificate;
@@ -222,6 +225,7 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
 
         properties.setProperty("gov.nist.javax.sip.TLS_SECURITY_POLICY",
                 this.getClass().getName());
+//        properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
 
         // Drop the client connection after we are done with the transaction.
         properties.setProperty("gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS", "false");
@@ -394,16 +398,6 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
             // send the request out.
             listener.inviteTid.sendRequest();
             
-            System.out.println("isSecure = " + ((ClientTransactionExt)listener.inviteTid).isSecure());
-            if ( ((ClientTransactionExt)listener.inviteTid).isSecure() ) {
-                System.out.println("cipherSuite = " + ((ClientTransactionExt)listener.inviteTid).getCipherSuite());
-                for ( Certificate cert : ((ClientTransactionExt)listener.inviteTid).getLocalCertificates()) {
-                    System.out.println("localCert =" + cert);
-                }
-                for ( Certificate cert : ((ClientTransactionExt)listener.inviteTid).getPeerCertificates()) {
-                    System.out.println("remoteCerts = " + cert);
-                }
-            }
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             ex.printStackTrace();
@@ -412,6 +406,10 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
     }
 
     public static void main(String args[]) {
+    	System.setProperty( "javax.net.ssl.keyStore",  TlsTest.class.getResource("testkeys").getPath() );
+        System.setProperty( "javax.net.ssl.trustStore", TlsTest.class.getResource("testkeys").getPath() );
+        System.setProperty( "javax.net.ssl.keyStorePassword", "passphrase" );
+        System.setProperty( "javax.net.ssl.keyStoreType", "jks" );
         new Shootist().init();
 
     }
@@ -457,6 +455,24 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
         }
         if (!foundPeerIdentity) {
             throw new SecurityException("Certificate identity does not match requested domain");
+        }
+        System.out.println("isSecure = " + transaction.isSecure());
+        if (transaction.isSecure() ) {
+            System.out.println("cipherSuite = " + transaction.getCipherSuite());
+            if(transaction.getLocalCertificates() != null) {
+                for ( Certificate cert : transaction.getLocalCertificates()) {
+                    System.out.println("localCert =" + cert);
+                }
+            }
+            try {
+	            if(transaction.getPeerCertificates() != null) {
+	                for ( Certificate cert : transaction.getPeerCertificates()) {
+	                    System.out.println("remoteCerts = " + cert);
+	                }
+	            }
+            } catch (SSLPeerUnverifiedException e) {
+            	throw new SecurityException("problem with peers", e);
+            }
         }
     }
 }

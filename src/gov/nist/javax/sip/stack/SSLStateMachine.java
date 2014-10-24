@@ -29,15 +29,16 @@ import gov.nist.core.CommonLogger;
 import gov.nist.core.LogWriter;
 import gov.nist.core.StackLogger;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.LinkedList;
+import java.util.Queue;
+
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import javax.net.ssl.SSLEngineResult.Status;
 import javax.net.ssl.SSLException;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.LinkedList;
-import java.util.Queue;
 
 /**
  * This is a helper state machine that negotiates the SSL connection automatically
@@ -136,7 +137,13 @@ public class SSLStateMachine {
 					runDelegatedTasks(result);
 					break;
 				case FINISHED:
-
+					// Added for https://java.net/jira/browse/JSIP-483 
+					if(channel instanceof NioTlsMessageChannel) {
+						((NioTlsMessageChannel)channel).setHandshakeCompleted(true);
+				        ((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setPeerCertificates(sslEngine.getSession().getPeerCertificates());
+				        ((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setLocalCertificates(sslEngine.getSession().getLocalCertificates());
+				        ((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setCipherSuite(sslEngine.getSession().getCipherSuite());
+					}
 					break;
 				case NOT_HANDSHAKING:
 					break loop;
@@ -175,6 +182,13 @@ public class SSLStateMachine {
                 	if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
     					logger.logDebug("Handshake complete!");
     				}
+                	// Added for https://java.net/jira/browse/JSIP-483 
+                	if(channel instanceof NioTlsMessageChannel) {
+	                	((NioTlsMessageChannel)channel).setHandshakeCompleted(true);
+	                    ((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setPeerCertificates(sslEngine.getSession().getPeerCertificates());
+	                    ((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setLocalCertificates(sslEngine.getSession().getLocalCertificates());
+	                    ((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setCipherSuite(sslEngine.getSession().getCipherSuite());
+                	}
                     break;
                 case NEED_TASK:
                     runDelegatedTasks(result);
@@ -313,6 +327,33 @@ public class SSLStateMachine {
 				if(src.hasRemaining()) {
 					break;
 				} else {
+					if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                        this.logger.logDebug(
+                                "Handshake passed");
+                    }
+					// Added for https://java.net/jira/browse/JSIP-483 
+                    // allow application to enforce policy by validating the
+                    // certificate
+					if(channel instanceof NioTlsMessageChannel) {
+	                    ((NioTlsMessageChannel)channel).setHandshakeCompleted(true);
+	                    ((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setPeerCertificates(sslEngine.getSession().getPeerCertificates());
+	                    ((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setLocalCertificates(sslEngine.getSession().getLocalCertificates());
+	                    ((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setCipherSuite(sslEngine.getSession().getCipherSuite());
+	                    try {
+	                        channel.getSIPStack()
+	                                .getTlsSecurityPolicy()
+	                                .enforceTlsPolicy(
+	                                        channel
+	                                                .getEncapsulatedClientTransaction());
+	                    } catch (SecurityException ex) {
+	                        throw new IOException(ex.getMessage());
+	                    }
+	
+	                    if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+	                        this.logger.logDebug(
+	                                "TLS Security policy passed");
+	                    }
+					}
 					break loop;
 				}
 			case NOT_HANDSHAKING:
