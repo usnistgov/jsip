@@ -217,6 +217,7 @@ public class IOHandler {
             channel.setHandshakeCompletedListener(listner);
             sslsock.addHandshakeCompletedListener(listner);
             sslsock.setEnabledProtocols(sipStack.getEnabledProtocols());
+            sslsock.setEnabledCipherSuites(sipStack.getEnabledCipherSuites());
 
             listner.startHandshakeWatchdog();
             sslsock.startHandshake();

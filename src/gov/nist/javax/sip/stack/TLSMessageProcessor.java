@@ -107,6 +107,7 @@ public class TLSMessageProcessor extends ConnectionOrientedMessageProcessor impl
         }            
         ((SSLServerSocket) this.sock).setUseClientMode(false);
         String []enabledCiphers = ((SipStackImpl)sipStack).getEnabledCipherSuites();
+        ((SSLServerSocket)sock).setEnabledProtocols(((SipStackImpl)sipStack).getEnabledProtocols());
         ((SSLServerSocket) this.sock).setEnabledCipherSuites(enabledCiphers);        
         if(sipStack.getClientAuth() == ClientAuthType.Want || sipStack.getClientAuth() == ClientAuthType.Default) {
             // we set it to true in Default case as well to keep backward compatibility and default behavior            
