@@ -298,7 +298,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     private transient Set<SIPDialogEventListener> eventListeners;
     // added for Issue 248 :
     // https://jain-sip.dev.java.net/issues/show_bug.cgi?id=248
-    private Semaphore timerTaskLock = new Semaphore(1);
+    private transient Semaphore timerTaskLock = new Semaphore(1);
 
     // We store here the useful data from the first transaction without having
     // to
@@ -324,7 +324,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     // aggressive flag to optimize eagerly
     private boolean releaseReferences;
 
-    private EarlyStateTimerTask earlyStateTimerTask;
+    private transient EarlyStateTimerTask earlyStateTimerTask;
 
     private int earlyDialogTimeout = 180;
 
@@ -333,7 +333,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
   private SIPDialog originalDialog;
 
-  private AckSendingStrategy ackSendingStrategy = new AckSendingStrategyImpl();
+  private transient AckSendingStrategy ackSendingStrategy = new AckSendingStrategyImpl();
 
 	
     // //////////////////////////////////////////////////////

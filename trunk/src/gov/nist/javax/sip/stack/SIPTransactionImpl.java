@@ -120,7 +120,7 @@ public abstract class SIPTransactionImpl implements SIPTransaction {
     
     protected boolean isMapped;
 
-    private TransactionSemaphore semaphore;
+    private transient TransactionSemaphore semaphore;
 
     // protected boolean eventPending; // indicate that an event is pending
     // here.
