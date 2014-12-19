@@ -45,6 +45,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import javax.sip.header.CallIdHeader;
 import javax.sip.header.ContentLengthHeader;
@@ -138,41 +139,39 @@ public class NioPipelineParser {
             Semaphore semaphore = callIDOrderingStructure.getSemaphore();
             final Queue<UnparsedMessage> messagesForCallID = callIDOrderingStructure.getMessagesForCallID();
             try {                                                                                
-                semaphore.acquire();  
+                boolean acquired = semaphore.tryAcquire(30, TimeUnit.SECONDS);
                 if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-                	logger.logDebug("semaphore acquired for message " + callId);
+                	logger.logDebug("semaphore acquired for message " + callId + " result " + acquired);
                 }
             } catch (InterruptedException e) {
-                logger.logError("Semaphore acquisition for callId " + callId + " interrupted", e);
+            	logger.logError("Semaphore acquisition for callId " + callId + " interrupted", e);
             }
+            
             SIPMessage parsedSIPMessage = null;
-            synchronized(smp) {
-				UnparsedMessage unparsedMessage = messagesForCallID.peek();
-				if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-                	logger.logDebug( "\nUnparsed message before parser is:\n" + unparsedMessage);
-                }
-				try {
-					parsedSIPMessage = smp.parseSIPMessage(unparsedMessage.lines.getBytes(), false, false, null);
-					if(unparsedMessage.body.length > 0) {
-						parsedSIPMessage.setMessageContent(unparsedMessage.body);
-					}
-				} catch (ParseException e) {
-					logger.logError("Problem parsing message " + unparsedMessage);
-					messagesForCallID.poll(); // move on to the next one
-					return;
-				}
-			}
-            if(sipStack.sipEventInterceptor != null) {
-            	sipStack.sipEventInterceptor.beforeMessage(parsedSIPMessage);
-            }
-            
-            // once acquired we get the first message to process
-            messagesForCallID.poll();
-            SIPMessage message = parsedSIPMessage;
-            
-            
             try {
-                sipMessageListener.processMessage(message);
+            	synchronized(smp) {
+            		UnparsedMessage unparsedMessage = messagesForCallID.peek();
+            		if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+            			logger.logDebug( "\nUnparsed message before parser is:\n" + unparsedMessage);
+            		}
+            		try {
+            			parsedSIPMessage = smp.parseSIPMessage(unparsedMessage.lines.getBytes(), false, false, null);
+            			if(unparsedMessage.body.length > 0) {
+            				parsedSIPMessage.setMessageContent(unparsedMessage.body);
+            			}
+            		} catch (ParseException e) {
+            			logger.logError("Problem parsing message " + unparsedMessage);
+            			messagesForCallID.poll(); // move on to the next one
+            			return;
+            		}
+            	}
+            	if(sipStack.sipEventInterceptor != null) {
+            		sipStack.sipEventInterceptor.beforeMessage(parsedSIPMessage);
+            	}
+
+            	// once acquired we get the first message to process
+            	messagesForCallID.poll();
+            	sipMessageListener.processMessage(parsedSIPMessage);
             } catch (Exception e) {
             	logger.logError("Error occured processing message " + message, e);    
                 // We do not break the TCP connection because other calls use the same socket here
@@ -195,7 +194,7 @@ public class NioPipelineParser {
                     }
                 }
                 if(sipStack.sipEventInterceptor != null) {
-                	sipStack.sipEventInterceptor.afterMessage(message);
+                	sipStack.sipEventInterceptor.afterMessage(parsedSIPMessage);
                 }
             }
             if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
