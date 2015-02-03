@@ -163,7 +163,7 @@ public class UDPMessageProcessor extends MessageProcessor implements Runnable {
 
             }
         } catch (Exception ex) {
-        	this.congestionAuditor.stop();
+        	if(this.congestionAuditor != null) this.congestionAuditor.stop();
             throw new IOException(ex);
         }
     }
