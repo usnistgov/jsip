@@ -216,7 +216,7 @@ public class SIPClientTransactionImpl extends SIPTransactionImpl implements SIPC
 
   private int callingStateTimeoutCount;
 
-  private SIPStackTimerTask transactionTimer;
+  private transient SIPStackTimerTask transactionTimer;
 
   // jeand/ avoid keeping the full Original Request in memory
   private String originalRequestFromTag;
@@ -225,7 +225,7 @@ public class SIPClientTransactionImpl extends SIPTransactionImpl implements SIPC
   private Contact originalRequestContact;
   private String originalRequestScheme;
 
-  private Object transactionTimerLock = new Object();
+  private transient Object transactionTimerLock = new Object();
   private AtomicBoolean timerKStarted = new AtomicBoolean(false);
   private boolean transactionTimerCancelled = false;
   private Set<Integer> responsesReceived = new CopyOnWriteArraySet<Integer>();
