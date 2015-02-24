@@ -497,6 +497,10 @@ public abstract class SIPTransactionStack implements
 
         @Override
         public void runTask() {
+        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            	logger.logDebug(
+                        "Removing forked client transaction : forkId = " + forkId);
+        	}
             forkedClientTransactionTable.remove(forkId);
         }
 
@@ -1845,6 +1849,10 @@ public abstract class SIPTransactionStack implements
         			final String forkId = clientTx.getForkId();
         			if (forkId != null && clientTx.isInviteTransaction()
         					&& this.maxForkTime != 0) {
+        				if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+        	            	logger.logDebug(
+        	                        "Scheduling to remove forked client transaction : forkId = " + forkId + " in "  + this.maxForkTime + " seconds");
+        	        	}
         				this.timer.schedule(new RemoveForkedTransactionTimerTask(
         						forkId), this.maxForkTime * 1000);
         				clientTx.stopExpiresTimer();

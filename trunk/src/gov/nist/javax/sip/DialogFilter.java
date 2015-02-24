@@ -1447,10 +1447,17 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 
             if (sipStack.getMaxForkTime() != 0
                     && SIPTransactionStack.isDialogCreated(response.getCSeqHeader().getMethod())) {
+            	if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+                    logger.logDebug("Trying to find forked Transaction for forked id " + response.getForkId());
+                }
                 SIPClientTransaction forked = this.sipStack
                         .getForkedTransaction(response.getForkId());
+                
                 if(dialog != null && forked != null) {
                     dialog.checkRetransmissionForForking(response);
+                    if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+                        logger.logDebug("original dialog " + forked.getDefaultDialog() + " forked dialog " + dialog);
+                    }
                     if(forked.getDefaultDialog() != null && !dialog.equals(forked.getDefaultDialog())) {
                         if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                             logger.logDebug(
@@ -1458,6 +1465,12 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                         }
                         sipEvent.setOriginalTransaction(forked);
                         sipEvent.setForkedResponse(true);
+                        if(transaction == null && dialog.getState() == DialogState.EARLY && response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
+                        	// https://java.net/jira/browse/JSIP-487
+                        	// for UAs, it happens that there is a race condition while the tx is getting removed and TERMINATED
+                        	// where some responses are still able to be handled by it so we update the dialog to CONFIRMED in setting the last response so the ACK can be created by the application
+                        	dialog.setLastResponse(transaction, response);
+                        }
                     }
                 }
             }

@@ -9,7 +9,6 @@ import gov.nist.javax.sip.message.SIPResponse;
 
 import java.io.IOException;
 
-import javax.sip.ClientTransaction;
 import javax.sip.Dialog;
 import javax.sip.ObjectInUseException;
 import javax.sip.SipException;
