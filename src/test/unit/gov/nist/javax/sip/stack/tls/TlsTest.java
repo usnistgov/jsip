@@ -9,6 +9,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Properties;
 
+import javax.sip.ListeningPoint;
+
 import junit.framework.TestCase;
 
 public class TlsTest extends TestCase {
@@ -73,6 +75,15 @@ public class TlsTest extends TestCase {
         this.shootist = new Shootist();
         this.shootme = new Shootme();
         this.shootme.init();
+		this.shootist.init("localhost");
+	}
+	
+	// Non Regression test for https://java.net/jira/browse/JSIP-492
+	public void testTlsResponseContactTCP() {
+        this.shootist = new Shootist();
+        this.shootme = new Shootme();
+        this.shootme.init();
+        this.shootme.setResponseTransport(ListeningPoint.TCP);
 		this.shootist.init("localhost");
 	}
 	

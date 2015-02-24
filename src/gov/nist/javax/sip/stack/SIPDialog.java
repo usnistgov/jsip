@@ -3064,6 +3064,14 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
             String transport = uri4transport.getTransportParam();
             ListeningPointImpl lp;
+            
+            if(uri4transport.isSecure()){
+            	// Fix for https://java.net/jira/browse/JSIP-492
+            	if(transport != null && transport.equalsIgnoreCase(ListeningPoint.UDP)){
+            		throw new SipException("Cannot create ACK - impossible to use sips uri with transport UDP:"+uri4transport);
+            	}
+            	transport = ListeningPoint.TLS;
+            }
             if (transport != null) {
                 lp = (ListeningPointImpl) sipProvider
                         .getListeningPoint(transport);
