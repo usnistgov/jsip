@@ -51,7 +51,7 @@ public class PServedUserParserTest extends ParserTestCase{
                                 "P-Served-User: <sip:aayush@rancore.com>;regstate=unreg\n",
                                 "P-Served-User: <sip:aayush@rancore.com>;sescase=term\n",
                                 "P-Served-User: <sip:aayush@rancore.com>\n",
-                                "P-Served-User: <sip:aayush@rancore.com>;sescase=term;regstate=unreg\n"};
+                                "P-Served-User: <sip:aayush@rancore.com;transport=UDP>;sescase=term;regstate=unreg\n"};
 
         super.testParser(PServedUserParser.class, p_serv_user);
 
@@ -72,7 +72,7 @@ public class PServedUserParserTest extends ParserTestCase{
 
         } catch (ParseException e) {
 
-            e.printStackTrace();
+            assertTrue(false);
         }
 
     }
