@@ -31,6 +31,7 @@ public class Shootme implements SipListener {
 
     Dialog dialog;
 	private boolean inviteSeen;
+	private String responseTransport = ListeningPoint.TLS;
 
     class ApplicationData {
         protected int ackCount;
@@ -112,8 +113,8 @@ public class Shootme implements SipListener {
             ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
             toHeader.setTag("4321"); // Application is supposed to set.
             Address address =
-                addressFactory.createAddress("Shootme <sip:" + myAddress+ ":" + myPort 
-                + ";transport=tls>" );
+                addressFactory.createAddress("Shootme <sips:" + myAddress+ ":" + myPort 
+                + ";transport=" + responseTransport + ">" );
             ContactHeader contactHeader =
                 headerFactory.createContactHeader(address);
 
@@ -334,6 +335,10 @@ public class Shootme implements SipListener {
         System.setProperty( "javax.net.ssl.keyStoreType", "jks" );
         Shootme shootme = new Shootme();
         shootme.init();
+	}
+
+	public void setResponseTransport(String responseTransport) {
+		this.responseTransport = responseTransport;
 	}
 	
 }
