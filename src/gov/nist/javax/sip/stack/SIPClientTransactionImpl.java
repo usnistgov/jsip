@@ -792,6 +792,8 @@ public class SIPClientTransactionImpl extends SIPTransactionImpl implements SIPC
           // What to do here ?? kill the dialog?
         }
       }
+      if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG) && dialog != null)
+          logger.logDebug("Dialog " + dialog + " current state " + dialog.getState() );
       if (dialog == null && statusCode >= 200 && statusCode < 300) {
         // http://java.net/jira/browse/JSIP-377
         // RFC 3261 Section 17.1.1.2
@@ -815,6 +817,21 @@ public class SIPClientTransactionImpl extends SIPTransactionImpl implements SIPC
           this.semRelease();
           return;
         }
+      } else if (dialog != null && dialog.getState() == DialogState.EARLY && statusCode >= 200 && statusCode < 300){
+      	// https://java.net/jira/browse/JSIP-487
+      	// for UAs, it happens that there is a race condition while the tx is getting removed and TERMINATED
+      	// where some responses are still able to be handled by it so we let 2xx responses pass up to the application
+      	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+              logger.logDebug("Client Transaction " + this + " branch id " + getBranch() + " has a early dialog and is in TERMINATED state");
+      	transactionResponse.setRetransmission(false);
+      	if (respondTo != null) {
+      		if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                  logger.logDebug("passing 2xx response up to the application");
+            respondTo.processResponse(transactionResponse, encapsulatedChannel, dialog);
+      	} else {
+            this.semRelease();
+            return;
+        } 
       } else {
         this.semRelease();
         return;
