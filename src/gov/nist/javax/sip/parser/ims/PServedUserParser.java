@@ -27,19 +27,18 @@ package gov.nist.javax.sip.parser.ims;
 */
 
 import java.text.ParseException;
-import gov.nist.javax.sip.address.AddressFactoryImpl;
+
 import gov.nist.javax.sip.header.SIPHeader;
 import gov.nist.javax.sip.header.ims.PServedUser;
+import gov.nist.javax.sip.parser.AddressParametersParser;
 import gov.nist.javax.sip.parser.Lexer;
-import gov.nist.javax.sip.parser.ParametersParser;
-import gov.nist.javax.sip.parser.TokenTypes;
 
 /**
  *
  * @author aayush.bhatnagar
  *
  */
-public class PServedUserParser extends ParametersParser implements TokenTypes{
+public class PServedUserParser extends AddressParametersParser {
 
     protected PServedUserParser(Lexer lexer) {
         super(lexer);
@@ -54,25 +53,16 @@ public class PServedUserParser extends ParametersParser implements TokenTypes{
         if (debug)
             dbg_enter("PServedUser.parse");
 
-        try{
-
-            this.lexer.match(TokenTypes.P_SERVED_USER);
-            this.lexer.SPorHT();
-            this.lexer.match(':');
-            this.lexer.SPorHT();
+        try {
             PServedUser servedUser = new PServedUser();
-            this.lexer.SPorHT();
-            String servedUsername = lexer.byteStringNoSemicolon();
-            servedUser.setAddress(new AddressFactoryImpl().createAddress(servedUsername));
+            headerName(P_SERVED_USER);
             super.parse(servedUser);
-
+            this.lexer.match('\n');
             return servedUser;
-
         }
         finally {
             if (debug)
                 dbg_leave("PServedUser.parse");
-            }
+        }
     }
-
-    }
+}
