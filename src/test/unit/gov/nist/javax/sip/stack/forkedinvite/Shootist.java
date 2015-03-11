@@ -2,6 +2,7 @@ package test.unit.gov.nist.javax.sip.stack.forkedinvite;
 
 import gov.nist.javax.sip.ResponseEventExt;
 import gov.nist.javax.sip.SipStackImpl;
+import gov.nist.javax.sip.header.ims.PAssertedServiceHeader;
 import gov.nist.javax.sip.header.ims.PPreferredServiceHeader;
 import gov.nist.javax.sip.message.ResponseExt;
 
@@ -523,6 +524,10 @@ public class Shootist implements SipListener {
             Header pPreferredServiceHeader = headerFactory.createHeader(
                     PPreferredServiceHeader.NAME, InviteTest.PREFERRED_SERVICE_VALUE);
             request.addHeader(pPreferredServiceHeader);
+            Header pAssertedServiceHeader = headerFactory.createHeader(
+                    PAssertedServiceHeader.NAME, InviteTest.PREFERRED_SERVICE_VALUE);
+            request.addHeader(pPreferredServiceHeader);
+            request.addHeader(pAssertedServiceHeader);
             
             // Create the client transaction.
             inviteTid = sipProvider.getNewClientTransaction(request);

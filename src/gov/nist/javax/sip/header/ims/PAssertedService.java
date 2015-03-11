@@ -77,7 +77,8 @@ public class PAssertedService extends SIPHeader implements PAssertedServiceHeade
     public String getApplicationIdentifiers() {
         if(this.subAppIds.charAt(0)=='.')
         {
-            return this.subAppIds.substring(1);
+        	// https://java.net/jira/browse/JSIP-476 Adding trim to avoid parsing issues
+            return this.subAppIds.substring(1).trim();
         }
         return this.subAppIds;
     }
@@ -85,7 +86,8 @@ public class PAssertedService extends SIPHeader implements PAssertedServiceHeade
     public String getSubserviceIdentifiers() {
         if(this.subServiceIds.charAt(0)=='.')
         {
-            return this.subServiceIds.substring(1);
+        	// https://java.net/jira/browse/JSIP-476 Adding trim to avoid parsing issues
+            return this.subServiceIds.substring(1).trim();
         }
         return this.subServiceIds;
     }

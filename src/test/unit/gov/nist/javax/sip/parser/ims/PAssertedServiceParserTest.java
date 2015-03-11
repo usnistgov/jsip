@@ -48,7 +48,8 @@ public class PAssertedServiceParserTest extends ParserTestCase{
                                  "P-Asserted-Service: urn:urn-7:3gpp-application.chatterboi.service2\n",
                                  "P-Asserted-Service: urn:urn-7:3gpp-service.photoshare.collage.privacyenabled.service3\n",
                                  "P-Asserted-Service: urn:urn-7:3gpp-application.calltracerservice\n",
-                                 "P-Asserted-Service: urn:urn-7:3gpp-service.missedcallalertservice\n"};
+                                 "P-Asserted-Service: urn:urn-7:3gpp-service.missedcallalertservice\n",
+                                 "P-Asserted-Service: urn:urn-7:3gpp-service.ims.icsi.mmtel.gsma.ipcall\n"};
 
         super.testParser(PAssertedServiceParser.class, p_assert_serv);
 
