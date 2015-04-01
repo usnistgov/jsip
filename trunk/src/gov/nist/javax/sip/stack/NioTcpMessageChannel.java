@@ -103,13 +103,13 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 				logger.logDebug("Read " + nbytes + " from socketChannel");
 			}
 			
+			if(streamError) 
+				throw new IOException("End-of-stream read (-1). " +
+					"This is usually an indication we are stuck and it is better to disconnect.");
+			
 			// This prevents us from getting stuck in a selector thread spinloop when socket is constantly ready for reading but there are no bytes.
 			if(nbytes == 0) 
 				throw new IOException("The socket is giving us empty TCP packets. " +
-					"This is usually an indication we are stuck and it is better to disconnect.");
-			
-			if(streamError) 
-				throw new IOException("Stream error msg len = -1 " +
 					"This is usually an indication we are stuck and it is better to disconnect.");
 			
 			// Otherwise just add the bytes to queue
