@@ -220,7 +220,9 @@ public class NioTlsWebSocketMessageChannel extends NioWebSocketMessageChannel im
 
 
 		} else {
-			sendMessage(sipMessage.toString().getBytes(), client);
+			// https://java.net/jira/browse/JSIP-497 fix transport for WSS
+			final byte[] msg = sipMessage.encodeAsBytes(this.getTransport());
+			sendMessage(msg, this.client);
 		}
     }
 
