@@ -3258,9 +3258,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         this.callIdHeader = sipResponse.getCallId();
         final int statusCode = sipResponse.getStatusCode();
         if (statusCode == 100) {
-            if (logger.isLoggingEnabled())
+            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 logger
-                        .logWarning(
+                        .logDebug(
                                 "Invalid status code - 100 in setLastResponse - ignoring");
             return;
         }
