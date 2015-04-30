@@ -1,12 +1,14 @@
 package test.unit.gov.nist.javax.sip.address;
 
+import gov.nist.javax.sip.address.SipUri;
+
 import java.text.ParseException;
 
 import javax.sip.address.SipURI;
 import javax.sip.address.URI;
 
 /**
- * Tests from RFC3261 §19.1.4 URI Comparison
+ * Tests from RFC3261 ��19.1.4 URI Comparison
  */
 public class JainSipUriTest extends junit.framework.TestCase {
 
@@ -44,6 +46,29 @@ public class JainSipUriTest extends junit.framework.TestCase {
         sipFactory = javax.sip.SipFactory.getInstance();
         sipFactory.setPathName("gov.nist");
     }
+    
+    public void testUserNullabilityInSipUri() throws ParseException {
+		// Given a URI with host set and null set as the user
+		SipUri uri = new SipUri();
+		uri.setUser(null);
+		uri.setHost("172.18.3.242");
+
+		// When
+		String userAtHost = uri.getUserAtHost();
+		String userAtHostPort = uri.getUserAtHostPort();
+
+		// Then
+		assertEquals("userAtHost equals host", userAtHost, "172.18.3.242");
+		assertEquals("userAtHostPort equals host", userAtHostPort, "172.18.3.242");
+	}
+    
+    public void testHeaderCaseSensitivity() throws Exception {
+
+    	String uri2 = ((SipURI) sipFactory.createAddressFactory().createURI("sip:conf@dev;transport=udp?companyId=1")).getHeader("companyId");
+    	assertNotNull(uri2);
+
+    }
+
 
     private SipURI sipUri(String uri) throws Exception {
         return (SipURI) uri(uri);
