@@ -277,7 +277,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
 
         String host = authority.getHost().encode();
         StringBuilder s = null;
-        if (user.equals("")) {
+        if (user == null || user.equals("")) {
             s = new StringBuilder();
         } else {
             s = new StringBuilder(user).append(AT);
@@ -298,7 +298,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
         int port = authority.getPort();
         // If port not set assign the default.
         StringBuilder s = null;
-        if (user.equals("")) {
+        if (user == null || user.equals("")) {
             s = new StringBuilder();
         } else {
             s = new StringBuilder(user).append(AT);
