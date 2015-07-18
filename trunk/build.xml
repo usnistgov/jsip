@@ -116,7 +116,7 @@ c:/jakarta-ant/bin/ant all
 	
     <target name="all" depends="make,compileexamples,compiletools,javadoc,javadoc-jain" />
 
-    <target name="all-android" depends="make,compileexamples,compiletools,javadoc,javadoc-jain,android-copy,android-replace,android-jar-sip-stack" />
+    <target name="all-android" depends="make,compiletools,javadoc,javadoc-jain,android-copy,android-replace,android-jar-sip-stack" />
 
     <target name="make" depends="compileapi,compileri,compilesdp,jain-sip-sdp-jar" />
 
