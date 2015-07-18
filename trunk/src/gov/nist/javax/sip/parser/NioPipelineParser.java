@@ -140,30 +140,35 @@ public class NioPipelineParser {
             final Queue<UnparsedMessage> messagesForCallID = callIDOrderingStructure.getMessagesForCallID();
             try {                                                                                
                 boolean acquired = semaphore.tryAcquire(30, TimeUnit.SECONDS);
-                if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-                	logger.logDebug("semaphore acquired for message " + callId + " result " + acquired);
+                if(!acquired) {
+                	if (logger.isLoggingEnabled(StackLogger.TRACE_WARN)) {
+                		logger.logWarning("Semaphore acquisition for callId " + callId + " wasn't successful so don't process message, returning");
+                	}
+                	// https://java.net/jira/browse/JSIP-499 don't process the message if the semaphore wasn't acquired
+                	return;
+                } else {
+	                if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+	                	logger.logDebug("semaphore acquired for message " + callId + " acquired");
+	                }
                 }
             } catch (InterruptedException e) {
-            	logger.logError("Semaphore acquisition for callId " + callId + " interrupted", e);
+            	logger.logError("Semaphore acquisition for callId " + callId + " interrupted, couldn't process message, returning", e);
+            	// https://java.net/jira/browse/JSIP-499 don't process the message if the semaphore wasn't acquired
+            	return;
             }
             
+            UnparsedMessage unparsedMessage = null;
             SIPMessage parsedSIPMessage = null;
             try {
             	synchronized(smp) {
-            		UnparsedMessage unparsedMessage = messagesForCallID.peek();
+            		unparsedMessage = messagesForCallID.peek();
             		if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
             			logger.logDebug( "\nUnparsed message before parser is:\n" + unparsedMessage);
             		}
-            		try {
-            			parsedSIPMessage = smp.parseSIPMessage(unparsedMessage.lines.getBytes(), false, false, null);
-            			if(unparsedMessage.body.length > 0) {
-            				parsedSIPMessage.setMessageContent(unparsedMessage.body);
-            			}
-            		} catch (ParseException e) {
-            			logger.logError("Problem parsing message " + unparsedMessage);
-            			messagesForCallID.poll(); // move on to the next one
-            			return;
-            		}
+        			parsedSIPMessage = smp.parseSIPMessage(unparsedMessage.lines.getBytes(), false, false, null);
+        			if(unparsedMessage.body.length > 0) {
+        				parsedSIPMessage.setMessageContent(unparsedMessage.body);
+        			}
             	}
             	if(sipStack.sipEventInterceptor != null) {
             		sipStack.sipEventInterceptor.beforeMessage(parsedSIPMessage);
@@ -172,7 +177,13 @@ public class NioPipelineParser {
             	// once acquired we get the first message to process
             	messagesForCallID.poll();
             	sipMessageListener.processMessage(parsedSIPMessage);
-            } catch (Exception e) {
+            } catch (ParseException e) {
+            	// https://java.net/jira/browse/JSIP-499 move the ParseException here so the finally block 
+            	// is called, the semaphore released and map cleaned up if need be
+    			logger.logError("Problem parsing message " + unparsedMessage);
+    			messagesForCallID.poll(); // move on to the next one
+    			return;
+    		}catch (Exception e) {
             	logger.logError("Error occured processing message " + message, e);    
                 // We do not break the TCP connection because other calls use the same socket here
             } finally {                                        
