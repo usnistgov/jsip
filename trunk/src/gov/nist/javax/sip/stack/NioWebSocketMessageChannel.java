@@ -246,20 +246,21 @@ public class NioWebSocketMessageChannel extends NioTcpMessageChannel{
 	@Override
     public void processMessage(SIPMessage message) throws Exception {
     	if(message instanceof Request) {
-    		Request request = (Request) message;
-    		if(request.getMethod().equals(Request.REGISTER)) {
-    			ContactHeader contact = (ContactHeader) request.getHeader(ContactHeader.NAME);
-    			URI uri = contact.getAddress().getURI();
-    			if(uri.isSipURI()) {
-    				SipURI sipUri = (SipURI) uri;
-    				String host = sipUri.getHost();
-    				NioTcpMessageProcessor processor = (NioTcpMessageProcessor) this.messageProcessor;
-    				HostPort hostPort = new HostPort();
-    				hostPort.setHost(new Host(host));
-    				hostPort.setPort(5060);
-    				processor.assignChannelToDestination(hostPort, this);
-    			}
-    		}
+    		// Commented out for https://java.net/jira/browse/JSIP-504 Contribution by Michael Groshans
+//    		Request request = (Request) message;
+//    		if(request.getMethod().equals(Request.REGISTER)) {
+//    			ContactHeader contact = (ContactHeader) request.getHeader(ContactHeader.NAME);
+//    			URI uri = contact.getAddress().getURI();
+//    			if(uri.isSipURI()) {
+//    				SipURI sipUri = (SipURI) uri;
+//    				String host = sipUri.getHost();
+//    				NioTcpMessageProcessor processor = (NioTcpMessageProcessor) this.messageProcessor;
+//    				HostPort hostPort = new HostPort();
+//    				hostPort.setHost(new Host(host));
+//    				hostPort.setPort(5060);
+//    				processor.assignChannelToDestination(hostPort, this);
+//    			}
+//    		}
     		ContactHeader contact = (ContactHeader)message.getHeader(ContactHeader.NAME);
         	RecordRouteHeader rr = (RecordRouteHeader)message.getHeader(RecordRouteHeader.NAME);
         	ViaHeader via = message.getTopmostViaHeader();

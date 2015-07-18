@@ -79,10 +79,11 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
     	}
     }
     
-	public void assignChannelToDestination(HostPort targetHostPort, NioTcpMessageChannel channel) {
-		String key = MessageChannel.getKey(targetHostPort, transport);
-		this.messageChannels.put(key, channel);
-	}
+//  Commented out as part of https://java.net/jira/browse/JSIP-504
+//	public void assignChannelToDestination(HostPort targetHostPort, NioTcpMessageChannel channel) {
+//		String key = MessageChannel.getKey(targetHostPort, transport);
+//		this.messageChannels.put(key, channel);
+//	}
     
     private SocketChannel initiateConnection(InetSocketAddress address, int timeout) throws IOException {
     	
