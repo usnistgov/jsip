@@ -159,13 +159,18 @@ public class NioPipelineParser {
             
             UnparsedMessage unparsedMessage = null;
             SIPMessage parsedSIPMessage = null;
+            boolean messagePolled = false;
             try {
             	synchronized(smp) {
             		unparsedMessage = messagesForCallID.peek();
             		if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
             			logger.logDebug( "\nUnparsed message before parser is:\n" + unparsedMessage);
             		}
-        			parsedSIPMessage = smp.parseSIPMessage(unparsedMessage.lines.getBytes(), false, false, null);
+        			parsedSIPMessage = smp.parseSIPMessage(unparsedMessage.lines.getBytes(), false, false, null);        		
+        			if(parsedSIPMessage == null) {
+        				// https://java.net/jira/browse/JSIP-503
+        				throw new ParseException("Bad Message" + unparsedMessage, 0);
+        			}
         			if(unparsedMessage.body.length > 0) {
         				parsedSIPMessage.setMessageContent(unparsedMessage.body);
         			}
@@ -176,17 +181,24 @@ public class NioPipelineParser {
 
             	// once acquired we get the first message to process
             	messagesForCallID.poll();
+            	messagePolled = true;
             	sipMessageListener.processMessage(parsedSIPMessage);
             } catch (ParseException e) {
             	// https://java.net/jira/browse/JSIP-499 move the ParseException here so the finally block 
             	// is called, the semaphore released and map cleaned up if need be
-    			logger.logError("Problem parsing message " + unparsedMessage);
-    			messagesForCallID.poll(); // move on to the next one
-    			return;
+            	if (logger.isLoggingEnabled(StackLogger.TRACE_WARN)) {
+            		logger.logWarning("Problem parsing message " + unparsedMessage);
+            	}
     		}catch (Exception e) {
-            	logger.logError("Error occured processing message " + message, e);    
+            	logger.logError("Error occured processing message " + message, e);
                 // We do not break the TCP connection because other calls use the same socket here
-            } finally {                                        
+            } finally {            
+            	if(!messagePolled) {
+            		// https://java.net/jira/browse/JSIP-503 we poll the message only if it 
+            		// wasn't polled in case of some exception by example while parsing or before processing the message
+            		// as in the interceptor can cause the poll not to be called
+            		messagesForCallID.poll(); // move on to the next one
+            	}
                 if(messagesForCallID.size() <= 0) {
                     messagesOrderingMap.remove(callId);
                     if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
@@ -204,7 +216,9 @@ public class NioPipelineParser {
                         messagesOrderingMap.notify();
                     }
                 }
-                if(sipStack.sipEventInterceptor != null) {
+                if(sipStack.sipEventInterceptor != null
+                		// https://java.net/jira/browse/JSIP-503
+                		&& parsedSIPMessage != null) {
                 	sipStack.sipEventInterceptor.afterMessage(parsedSIPMessage);
                 }
             }
