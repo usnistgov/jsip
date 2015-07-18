@@ -1869,7 +1869,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 // My tag is assigned when sending response
             } else {
                 setLocalSequenceNumber(sipRequest.getCSeq().getSeqNumber());
-                this.originalLocalSequenceNumber = localSequenceNumber;
+                this.originalLocalSequenceNumber = getLocalSeqNumber();
                 this.setLocalTag(sipRequest.getFrom().getTag());
                 if (myTag == null)
                     if (logger.isLoggingEnabled())
@@ -2422,8 +2422,12 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
              * request is actually dispatched
              */
             cseq = (CSeq) sipRequest.getCSeq();
-            cseq.setSeqNumber(this.localSequenceNumber + 1);
+            cseq.setSeqNumber(getLocalSeqNumber() + 1);
+            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                logger.logDebug(
+                        "SIPDialog::createRequest:setting Request Seq Number to " + cseq.getSeqNumber());
 
+            }
         } catch (InvalidArgumentException ex) {
             InternalErrorHandler.handleException(ex);
         }
@@ -2768,12 +2772,17 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
         try {
             // Increment before setting!!
-        	long cseqNumber = dialogRequest.getCSeq() == null?localSequenceNumber:dialogRequest.getCSeq().getSeqNumber();
-        	if(cseqNumber > localSequenceNumber) {
-        		localSequenceNumber = cseqNumber;
+        	long cseqNumber = dialogRequest.getCSeq() == null?getLocalSeqNumber():dialogRequest.getCSeq().getSeqNumber();
+        	if(cseqNumber > getLocalSeqNumber()) {
+        		setLocalSequenceNumber(cseqNumber);
         	} else {
-        		localSequenceNumber++;
+        		setLocalSequenceNumber(getLocalSeqNumber() + 1);
         	}
+        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                logger.logDebug(
+                        "SIPDialog::sendRequest:setting Seq Number to " + getLocalSeqNumber());
+
+            }
         	dialogRequest.getCSeq().setSeqNumber(getLocalSeqNumber());
         } catch (InvalidArgumentException ex) {
             logger.logFatalError(ex.getMessage());
