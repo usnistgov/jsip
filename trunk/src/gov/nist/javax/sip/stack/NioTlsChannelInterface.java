@@ -51,6 +51,11 @@ public interface NioTlsChannelInterface {
 	 * Initialize the buffer again.
 	 * @return
 	 */
+	ByteBuffer prepareAppDataBuffer(int capacity);
+	/**
+	 * Initialize the buffer again.
+	 * @return
+	 */
 	ByteBuffer prepareEncryptedDataBuffer();
 	/**
 	 * Add plain text data in the queue. It will be encrpted later in generic way
