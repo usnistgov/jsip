@@ -55,6 +55,8 @@ import java.text.ParseException;
  * simpler and quicker.
  */
 
+import javax.xml.bind.DatatypeConverter;
+
 /**
  * Parse SIP message and parts of SIP messages such as URI's etc from memory and
  * return a structure. Intended use: UDP message processing. This class is used
@@ -119,7 +121,7 @@ public class StringMsgParser implements MessageParser {
         catch (ArrayIndexOutOfBoundsException e) {
             // Array contains only control char, return null.
         	if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-            	logger.logDebug("handled only control char " + msgBuffer + " so returning null");
+            	logger.logDebug("handled only control char so returning null");
             }
             return null;
         }

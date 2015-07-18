@@ -163,12 +163,17 @@ public class NIOParsingTest extends ScenarioHarness {
         					"CSeq: 314159 INVITE\r\n" +
         					"Contact: <sip:alice@pc33.atlanta.com>\r\n" +
         					"Content-Type: application/sdp\r\n" +
-        					"Content-Length: 0\r\n\r\n000\r\n\r\n";
+        					"Content-Length: 0\r\n\r\n";
+        
+        String testmessage2= "000\r\n\r\n";
         
         public void sendGarbage() throws Exception {
             Socket test = new Socket(host, SERVER_PORT);
 			test.getOutputStream().write(testmessage.getBytes());
 			test.getOutputStream().flush();
+			test.getOutputStream().write(testmessage2.getBytes());
+			test.getOutputStream().flush();
+//			test.close();
 				
 			Thread.sleep(OPEN_DELAY);          
             
