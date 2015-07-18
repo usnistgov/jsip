@@ -112,6 +112,10 @@ public class NioTlsWebSocketMessageChannel extends NioWebSocketMessageChannel im
 		return ByteBufferFactory.getInstance().allocateDirect(appBufferMax);
 	}
 	
+	public ByteBuffer prepareAppDataBuffer(int capacity) {
+		return ByteBufferFactory.getInstance().allocateDirect(capacity);
+	}
+	
 	public static class SSLReconnectedException extends IOException {
 		private static final long serialVersionUID = 1L;}
 	

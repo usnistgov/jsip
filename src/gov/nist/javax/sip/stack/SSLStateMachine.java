@@ -39,6 +39,7 @@ import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import javax.net.ssl.SSLEngineResult.Status;
 import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLPeerUnverifiedException;
 
 /**
  * This is a helper state machine that negotiates the SSL connection automatically
@@ -104,8 +105,10 @@ public class SSLStateMachine {
 				} finally {
 					if(!currentBuffer.message.hasRemaining()) {
 						pendingOutboundBuffers.remove();
-						logger.logDebug("REMOVED item from encryption queue because it has no more data, all is done, buffers size now is "
+						if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+							logger.logDebug("REMOVED item from encryption queue because it has no more data, all is done, buffers size now is "
 								+ pendingOutboundBuffers.size() + " current buffer is " + currentBuffer);
+						}
 					}
 				}
 				int remaining = currentBuffer.message.remaining();
@@ -144,9 +147,21 @@ public class SSLStateMachine {
 						// Added for https://java.net/jira/browse/JSIP-483 
 						if(channel instanceof NioTlsMessageChannel) {
 							((NioTlsMessageChannel)channel).setHandshakeCompleted(true);
-							((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setPeerCertificates(sslEngine.getSession().getPeerCertificates());
-							((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setLocalCertificates(sslEngine.getSession().getLocalCertificates());
-							((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setCipherSuite(sslEngine.getSession().getCipherSuite());
+							if(sslEngine.getSession() != null) {
+								if(!ClientAuthType.Disabled.equals(channel.getSIPStack().getClientAuth()) && !ClientAuthType.DisabledAll.equals(channel.getSIPStack().getClientAuth())) {
+									// https://java.net/jira/browse/JSIP-483 Don't try to get the PeerCertificates if the client auth is Disabled or DisabledAll as they won't be available
+									try {
+										((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setPeerCertificates(sslEngine.getSession().getPeerCertificates());
+									} catch (SSLPeerUnverifiedException e) {
+										// no op if -Dgov.nist.javax.sip.TLS_CLIENT_AUTH_TYPE=Disabled is used, no peer certificates will be available
+										if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+											logger.logDebug("sslEngine.getSession().getPeerCertificates() are not available, which is normal if running with gov.nist.javax.sip.TLS_CLIENT_AUTH_TYPE=Disabled");
+										}
+									}
+								}
+								((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setLocalCertificates(sslEngine.getSession().getLocalCertificates());
+								((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setCipherSuite(sslEngine.getSession().getCipherSuite());
+							}
 						}
 						break;
 					case NOT_HANDSHAKING:
@@ -190,9 +205,21 @@ public class SSLStateMachine {
 					// Added for https://java.net/jira/browse/JSIP-483 
 					if(channel instanceof NioTlsMessageChannel) {
 						((NioTlsMessageChannel)channel).setHandshakeCompleted(true);
-						((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setPeerCertificates(sslEngine.getSession().getPeerCertificates());
-						((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setLocalCertificates(sslEngine.getSession().getLocalCertificates());
-						((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setCipherSuite(sslEngine.getSession().getCipherSuite());
+						if(sslEngine.getSession() != null) {
+							if(!ClientAuthType.Disabled.equals(channel.getSIPStack().getClientAuth()) && !ClientAuthType.DisabledAll.equals(channel.getSIPStack().getClientAuth())) {
+								// https://java.net/jira/browse/JSIP-483 Don't try to get the PeerCertificates if the client auth is Disabled or DisabledAll as they won't be available
+								try {
+									((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setPeerCertificates(sslEngine.getSession().getPeerCertificates());
+								} catch (SSLPeerUnverifiedException e) {
+									// no op if -Dgov.nist.javax.sip.TLS_CLIENT_AUTH_TYPE=Disabled is used, no peer certificates will be available
+									if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+										logger.logDebug("sslEngine.getSession().getPeerCertificates() are not available, which is normal if running with gov.nist.javax.sip.TLS_CLIENT_AUTH_TYPE=Disabled");
+									}
+								}
+							}
+							((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setLocalCertificates(sslEngine.getSession().getLocalCertificates());
+							((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setCipherSuite(sslEngine.getSession().getCipherSuite());
+						}
 					}
 					break;
 				case NEED_TASK:
@@ -298,9 +325,20 @@ public class SSLStateMachine {
 				}
 				if(result.getStatus().equals(Status.BUFFER_OVERFLOW)) {
 					if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-						logger.logDebug("Buffer overflow , must prepare the buffer again. Check for continious overflow here?");
+						logger.logDebug("Buffer overflow , must prepare the buffer again."
+								+ " outNetBuffer remaining: " +  dst.remaining()
+								+ " outNetBuffer postion: " +  dst.position()
+								+ " Packet buffer size: " + sslEngine.getSession().getPacketBufferSize()
+								+ " new buffer size: " + sslEngine.getSession().getPacketBufferSize() + dst.position());
 					}
-					dst = channel.prepareAppDataBuffer();
+					ByteBuffer newBuf = channel.prepareAppDataBuffer(sslEngine.getSession().getPacketBufferSize() + dst.position());
+					dst.flip();
+					newBuf.put(dst);
+					dst = newBuf;
+					if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+						logger.logDebug(" new outNetBuffer remaining: " +  dst.remaining()
+								+ " new outNetBuffer postion: " +  dst.position());
+					}
 					continue;
 				}
 				if(result.bytesProduced()>0) {
@@ -344,9 +382,21 @@ public class SSLStateMachine {
 						// certificate
 						if(channel instanceof NioTlsMessageChannel) {
 							((NioTlsMessageChannel)channel).setHandshakeCompleted(true);
-							((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setPeerCertificates(sslEngine.getSession().getPeerCertificates());
-							((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setLocalCertificates(sslEngine.getSession().getLocalCertificates());
-							((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setCipherSuite(sslEngine.getSession().getCipherSuite());
+							if(sslEngine.getSession() != null) {
+								if(!ClientAuthType.Disabled.equals(channel.getSIPStack().getClientAuth()) && !ClientAuthType.DisabledAll.equals(channel.getSIPStack().getClientAuth())) {
+									// https://java.net/jira/browse/JSIP-483 Don't try to get the PeerCertificates if the client auth is Disabled or DisabledAll as they won't be available
+									try {
+										((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setPeerCertificates(sslEngine.getSession().getPeerCertificates());
+									} catch (SSLPeerUnverifiedException e) {
+										// no op if -Dgov.nist.javax.sip.TLS_CLIENT_AUTH_TYPE=Disabled is used, no peer certificates will be available
+										if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+											logger.logDebug("sslEngine.getSession().getPeerCertificates() are not available, which is normal if running with gov.nist.javax.sip.TLS_CLIENT_AUTH_TYPE=Disabled");
+										}
+									}
+								}
+								((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setLocalCertificates(sslEngine.getSession().getLocalCertificates());
+								((NioTlsMessageChannel)channel).getHandshakeCompletedListener().setCipherSuite(sslEngine.getSession().getCipherSuite());
+							}
 							try {
 								channel.getSIPStack()
 								.getTlsSecurityPolicy()
