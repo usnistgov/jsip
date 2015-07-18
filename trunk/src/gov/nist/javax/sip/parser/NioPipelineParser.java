@@ -169,20 +169,26 @@ public class NioPipelineParser {
         			parsedSIPMessage = smp.parseSIPMessage(unparsedMessage.lines.getBytes(), false, false, null);        		
         			if(parsedSIPMessage == null) {
         				// https://java.net/jira/browse/JSIP-503
-        				throw new ParseException("Bad Message" + unparsedMessage, 0);
-        			}
-        			if(unparsedMessage.body.length > 0) {
+        				if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                			logger.logDebug( "parsed message is null, probably because of end of stream, empty packets or socket closed "
+                					+ "and we got CRLF to terminate cleanly, not processing message");
+                		}
+        			} else if(unparsedMessage.body.length > 0) {
         				parsedSIPMessage.setMessageContent(unparsedMessage.body);
         			}
             	}
-            	if(sipStack.sipEventInterceptor != null) {
+            	if(sipStack.sipEventInterceptor != null
+            			// https://java.net/jira/browse/JSIP-503
+                		&& parsedSIPMessage != null) {
             		sipStack.sipEventInterceptor.beforeMessage(parsedSIPMessage);
             	}
 
             	// once acquired we get the first message to process
             	messagesForCallID.poll();
             	messagePolled = true;
-            	sipMessageListener.processMessage(parsedSIPMessage);
+            	if(parsedSIPMessage != null) { // https://java.net/jira/browse/JSIP-503
+            		sipMessageListener.processMessage(parsedSIPMessage);
+            	}
             } catch (ParseException e) {
             	// https://java.net/jira/browse/JSIP-499 move the ParseException here so the finally block 
             	// is called, the semaphore released and map cleaned up if need be
@@ -202,11 +208,11 @@ public class NioPipelineParser {
                 if(messagesForCallID.size() <= 0) {
                     messagesOrderingMap.remove(callId);
                     if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-                    	logger.logDebug("CallIDOrderingStructure removed for message " + callId);
+                    	logger.logDebug("CallIDOrderingStructure removed for callId " + callId);
                     }
                 }
                 if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-                	logger.logDebug("releasing semaphore for message " + message);
+                	logger.logDebug("releasing semaphore for message " + parsedSIPMessage);
                 }
                 //release the semaphore so that another thread can process another message from the call id queue in the correct order
                 // or a new message from another call id queue
@@ -223,7 +229,7 @@ public class NioPipelineParser {
                 }
             }
             if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-            	logger.logDebug("dispatch task done on " + message);
+            	logger.logDebug("dispatch task done on " + parsedSIPMessage);
             }
         }
 		public long getReceptionTime() {
