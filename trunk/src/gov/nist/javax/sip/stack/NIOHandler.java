@@ -134,7 +134,7 @@ public class NIOHandler {
     				logger.logDebug("Removing cached socketChannel without key"
     						+ this + " socketChannel = " + channel + " key = " + key);
     			}
-    			socketTable.remove(key);
+    			removeSocket(key);
     		}
     	}
     }
