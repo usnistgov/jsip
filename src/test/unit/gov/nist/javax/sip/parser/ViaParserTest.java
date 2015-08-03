@@ -42,7 +42,9 @@ public class ViaParserTest extends ParserTestCase {
                     + " , SIP/2.0/UDP here.com:5060( Hello the big world) \n",
             "Via: SIP/2.0/UDP ss1.wcom.com:5060;branch=2d4790.1\n",
             "Via: SIP/2.0/UDP first.example.com:4000;ttl=16"
-                    + ";maddr=224.2.0.1 ;branch=a7c6a8dlze.1 (Acme server)\n" };
+                    + ";maddr=224.2.0.1 ;branch=a7c6a8dlze.1 (Acme server)\n",
+            "Via: SIP/2.0/UDP first.example_example.com:4000;ttl=16"
+                    + ";maddr=224.2.0.1 ;branch=a7c6a8dlze.1 (Acme __server)\n"};
 
 
     public void testParser() {
