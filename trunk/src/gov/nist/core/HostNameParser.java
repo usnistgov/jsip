@@ -74,7 +74,8 @@ public class HostNameParser extends ParserCore {
     }
 
     private static final char[] VALID_DOMAIN_LABEL_CHAR =
-        new char[] {LexerCore.ALPHADIGIT_VALID_CHARS, '-', '.'};
+    // Add underscore as allowed character https://java.net/jira/browse/JSIP-506
+        new char[] {LexerCore.ALPHADIGIT_VALID_CHARS, '-', '.', '_'};
     protected void consumeDomainLabel() throws ParseException {
         if (debug)
             dbg_enter("domainLabel");
