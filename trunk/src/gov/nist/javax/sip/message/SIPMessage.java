@@ -210,6 +210,10 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
       */
      private int localPort;
 
+     private InetAddress peerPacketSourceAddress;
+     
+     private int peerPacketSourcePort;
+
     /**
      * Return true if the header belongs only in a Request.
      *
@@ -2053,4 +2057,20 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
      public int getLocalPort() {
          return localPort;
      }
+
+    public void setPeerPacketSourceAddress(InetAddress peerPacketSourceAddress) {
+        this.peerPacketSourceAddress = peerPacketSourceAddress;
+    }
+    
+    public InetAddress getPeerPacketSourceAddress(){
+        return this.peerPacketSourceAddress;
+    }
+
+    public void setPeerPacketSourcePort(int peerPacketSourcePort) {
+        this.peerPacketSourcePort = peerPacketSourcePort;
+    }
+    
+    public int getPeerPacketSourcePort(){
+        return this.peerPacketSourcePort;
+    }
 }
