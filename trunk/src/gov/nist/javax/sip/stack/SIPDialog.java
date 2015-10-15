@@ -1497,10 +1497,14 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             this.dialogDeleteTask = new DialogDeleteTask();
             // Delete the transaction after the max ack timeout.
             if (sipStack.getTimer() != null && sipStack.getTimer().isStarted()) {
+            	int delay = SIPTransactionStack.BASE_TIMER_INTERVAL;
+            	if(lastTransaction != null) {
+            		delay = lastTransaction.getBaseTimerInterval();
+            	}
             	sipStack.getTimer().schedule(
                     this.dialogDeleteTask,
                     SIPTransaction.TIMER_H
-                            * lastTransaction.getBaseTimerInterval());
+                            * delay);
             } else {
             	this.delete();
             }
