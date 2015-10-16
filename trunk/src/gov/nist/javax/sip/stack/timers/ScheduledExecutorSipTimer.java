@@ -26,6 +26,7 @@
 package gov.nist.javax.sip.stack.timers;
 
 import gov.nist.core.CommonLogger;
+import gov.nist.core.NamingThreadFactory;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.SipStackImpl;
 import gov.nist.javax.sip.stack.SIPStackTimerTask;
@@ -50,7 +51,7 @@ public class ScheduledExecutorSipTimer implements SipTimer {
     private volatile int numCancelled = 0;
     
 	public ScheduledExecutorSipTimer() {
-		threadPoolExecutor = new ScheduledThreadPoolExecutor(1);		
+		threadPoolExecutor = new ScheduledThreadPoolExecutor(1, new NamingThreadFactory("jain_sip_timer_executor"));		
 	}
 	
 	/* (non-Javadoc)
