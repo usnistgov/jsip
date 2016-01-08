@@ -134,7 +134,9 @@ public class MultipartMimeContentImpl implements MultipartMimeContent {
   }
 
   private ContentImpl parseBodyPart(String bodyPart) throws ParseException {
-    String[] nextPartSplit = bodyPart.split("\r?\n\r?\n");
+    // limit the number of crlf (new lines) we split on, only split the header from
+    // the body and don't split on any crlf in the body  
+    String[] nextPartSplit = bodyPart.split("\r?\n\r?\n", 2);
 
     String headers[] = null;
     String bodyContent;

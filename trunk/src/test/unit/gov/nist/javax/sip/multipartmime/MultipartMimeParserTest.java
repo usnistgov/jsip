@@ -93,6 +93,7 @@ public class MultipartMimeParserTest extends TestCase {
 										  + "<timestamp>2007-07-09T14:00:00Z</timestamp>\n"
 		   + "<status>\n"
 		    + "<gp:geopriv>\n"
+		    + "\r\n"
 		  	+ "<gp:location-info>\n"
 		  	  + "<gml:location>\n"
 		  		+ "<gml:Point srsName=\"urn:ogc:def:crs:EPSG::4326\">\n"
