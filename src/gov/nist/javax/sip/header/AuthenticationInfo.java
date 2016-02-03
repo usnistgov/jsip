@@ -299,7 +299,6 @@ public final class AuthenticationInfo
                 || name.equalsIgnoreCase(ParameterNames.OPAQUE)
                 || name.equalsIgnoreCase(ParameterNames.USERNAME)
                 || name.equalsIgnoreCase(ParameterNames.DOMAIN)
-                || name.equalsIgnoreCase(ParameterNames.NEXT_NONCE)
                 || name.equalsIgnoreCase(ParameterNames.RESPONSE_AUTH)
                 || name.equalsIgnoreCase(ParameterNames.SRAND)
                 || name.equalsIgnoreCase(ParameterNames.SNUM)
