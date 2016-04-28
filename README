@@ -1,6 +1,8 @@
 
 JAIN-SIP 1.2 Reference Implementation
 --------------------------------------
+NOTE: This official jain-sip Reference Implementation.
+
 CONTENTS
 -------
 See docs/index.html
@@ -69,9 +71,7 @@ are provided in each example directory to run the examples.
 How to get Source Code Refreshes
 --------------------------------
 
-Cruise Control Snapshot
------------------------
-http://hudson.jboss.org/hudson/view/Mobicents/job/jain-sip/
+git clone https://github.com/usnistgov/jsip.git
 
 ----------------------------------------------------------------------------
 
