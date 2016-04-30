@@ -1,7 +1,7 @@
 
 JAIN-SIP 1.2 Reference Implementation
 --------------------------------------
-NOTE: This official jain-sip Reference Implementation.
+NOTE: This is the official jain-sip 1.2 Reference Implementation. 
 
 CONTENTS
 -------
@@ -97,6 +97,11 @@ TCK (version 1.2)
 ----------------
 M. Ranganathan  <mranga@nist.gov>
 Jeroen van Bemmel <jeroen@zonnet.nl>
+
+
+Current maintainence lead:
+
+Vladimir Ralev <ralev@gmail.com>
 
 
 
