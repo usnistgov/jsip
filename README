@@ -12,16 +12,16 @@ BUILD Notes
 Platforms:
 ---------
 You need to install J2SE JDK 1.5 or above. You can
-get the SDK from http://www.javasoft.com
+get the J2SE SDK from
 
-
+https://www.oracle.com/java/index.html
 
 Dependencies
 ------------
 
-1. You need to install ant and the junit extension for ant on your machine.
-2. You need to have junit.jar in your classpath.
-3. You need to have log4j.jar in your classpath (included in this distribution).
+1. You need to install ant and the junit extension for ant on your machine. 
+2. You need to have junit.jar in your classpath to run the tck.
+3. You need to have log4j.jar in your classpath (included in this distribution). 
 
 There are versions of the dependent libraries in the lib directory.  
 For your build environment, please edit ant-build-config.properties.
