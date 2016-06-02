@@ -1,5 +1,13 @@
 package test.unit.gov.nist.javax.sip.multipartmime;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
+
+import javax.sip.header.ContentTypeHeader;
+import javax.sip.message.Request;
+
 import gov.nist.javax.sip.header.ContentType;
 import gov.nist.javax.sip.header.HeaderFactoryExt;
 import gov.nist.javax.sip.header.HeaderFactoryImpl;
@@ -10,15 +18,6 @@ import gov.nist.javax.sip.message.MessageFactoryExt;
 import gov.nist.javax.sip.message.MessageFactoryImpl;
 import gov.nist.javax.sip.message.MultipartMimeContent;
 import gov.nist.javax.sip.message.SIPRequest;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Iterator;
-
-import javax.sip.header.ContentTypeHeader;
-import javax.sip.message.Request;
-
 import junit.framework.TestCase;
 
 public class MultipartMimeParserTest extends TestCase {
@@ -112,6 +111,55 @@ public class MultipartMimeParserTest extends TestCase {
 		  + "</tuple>\n"
 		  + "</presence>\n"
 		  + "--boundary1--\n";
+  
+  private static String simpleContentWithEmptyLine = "\n"
+    + "v=0\n"
+    + "o=IWSPM 2266426 2266426 IN IP4 10.92.9.164\n"
+    + "s=-\n"
+    + "c=IN IP4 10.92.9.164\n"
+    + "\n"
+    + "t=0 0\n"
+    + "m=audio 31956 RTP/AVP 0 8 18 101\n"
+    + "a=ptime:20\n"
+    + "a=rtpmap:101 telephone-event/8000\n"
+    + "a=fmtp:101 0-15\n"
+    + "\n";
+  
+  private static String multipartContentWithEmptyLine = "\n"
+    + "--boundary1\n"
+    + "Content-Type: message/sip\n"
+    + "\n"
+    + "INVITE sip:bob@biloxi.com SIP/2.0\n"
+    + "Via: SIP/2.0/UDP pc33.atlanta.com;branch=z9hG4bKnashds8\n"
+    + "To: Bob <bob@biloxi.com>\n"
+    + "From: Alice <alice@atlanta.com>;tag=1928301774\n"
+    + "Call-ID: a84b4c76e66710\n"
+    + "CSeq: 314159 INVITE\n"
+    + "Max-Forwards: 70\n"
+    + "Date: Thu, 21 Feb 2002 13:02:03 GMT\n"
+    + "Contact: <sip:alice@pc33.atlanta.com>\n"
+    + "Content-Type: application/sdp\n"
+    + "Content-Length: 147\n"
+    + "\n"
+    + "v=0\n"
+    + "o=UserA 2890844526 2890844526 IN IP4 here.com\n"
+    + "s=Session SDP\n"
+    + "c=IN IP4 pc33.atlanta.com\n"
+    + "t=0 0\n"
+    + "m=audio 49172 RTP/AVP 0\n"
+    + "a=rtpmap:0 PCMU/8000\n"
+    + "\n"
+    + "--boundary1\n"
+    + "Content-Type: application/pkcs7-signature; name=smime.p7s\n"
+    + "Content-Transfer-Encoding: base64\n"
+    + "Content-Disposition: attachment; filename=smime.p7s; handling=required\n"
+    + "\n"
+    + "ghyHhHUujhJhjH77n8HHGTrfvbnj756tbB9HG4VQpfyF467GhIGfHfYT6\n"
+    + "4VQpfyF467GhIGfHfYT6jH77n8HHGghyHhHUujhJh756tbB9HGTrfvbnj\n"
+    + "n8HHGTrfvhJhjH776tbB9HG4VQbnj7567GhIGfHfYT6ghyHhHUujpfyF4\n"
+    + "7GhIGfHfYT64VQbnj756\n"
+    + "\n"
+    + "--boundary1--\n";
 
   
   private static String messageString = "INVITE sip:user2@server2.com SIP/2.0\r\n"
@@ -208,11 +256,10 @@ public class MultipartMimeParserTest extends TestCase {
 
   public void testMultiPartMimeMarshallingAndUnMarshallingWithExtraHeaders() throws Exception {
     SIPRequest request = new SIPRequest();
-//    InputStream in = getClass().getClassLoader().getResourceAsStream("test/unit/gov/nist/javax/sip/multipartmime/multipart-body.txt");
-//    byte[] content = toByteArray(in);
     byte[] content = contentString2.getBytes("UTF-8");
     ContentType contentType = new ContentType("multipart", "mixed");
     contentType.setParameter("boundary", "boundary1");
+    
     request.setContent(content, contentType);
     MultipartMimeContent multipartMimeContent = request.getMultipartMimeContent();
     checkMultiPart(multipartMimeContent);
@@ -222,6 +269,39 @@ public class MultipartMimeParserTest extends TestCase {
     request.setContent(bodyContent, contentType);
     MultipartMimeContent multipartMimeContent2 = request.getMultipartMimeContent();
     checkMultiPart(multipartMimeContent2);
+  }
+  
+  public void testMultiPartMimeMarshallingAndUnMarshallingWithExtraHeadersAndSpaces() throws Exception {
+    SIPRequest request = new SIPRequest();
+    byte[] content = multipartContentWithEmptyLine.getBytes("UTF-8");
+    ContentType contentType = new ContentType("multipart", "mixed");
+    contentType.setParameter("boundary", "boundary1");
+    
+    request.setContent(content, contentType);
+    MultipartMimeContent multipartMimeContent = request.getMultipartMimeContent();
+    checkMultiPartWithSpaces(multipartMimeContent);
+    
+    // let's now marshall back the body and reparse it to check consistency
+    String bodyContent = multipartMimeContent.toString();
+    request.setContent(bodyContent, contentType);
+    MultipartMimeContent multipartMimeContent2 = request.getMultipartMimeContent();
+    checkMultiPartWithSpaces(multipartMimeContent2);
+  }
+  
+  public void testMultiPartMimeMarshallingAndUnMarshallingWithANonMultiPartBodyWithAnEmptyLine() throws Exception {
+    SIPRequest request = new SIPRequest();
+    byte[] content = simpleContentWithEmptyLine.getBytes("UTF-8");
+    ContentType contentType = new ContentType("application", "sdp");
+    request.setContent(content, contentType);
+    MultipartMimeContent multipartMimeContent = request.getMultipartMimeContent();
+    checkSimpleBody(multipartMimeContent);
+    
+    // let's now marshall back the body and reparse it to check consistency
+    // we just want the content, not the boundaries (which are null)
+    String bodyContent = multipartMimeContent.getContents().next().getContent().toString();
+    request.setContent(bodyContent, contentType);
+    MultipartMimeContent multipartMimeContent2 = request.getMultipartMimeContent();
+    checkSimpleBody(multipartMimeContent2);
   }
 
   private void checkMultiPart(MultipartMimeContent multipartMimeContent) {
@@ -239,6 +319,36 @@ public class MultipartMimeParserTest extends TestCase {
     assertEquals("Content-ID", extensionHeader.getName());
     assertEquals("alice123@atlanta.example.com", extensionHeader.getValue());
     assertNotNull(sdpPart.getContent());
+  }
+  
+  private void checkMultiPartWithSpaces(MultipartMimeContent multipartMimeContent) {
+    Iterator<Content> partContentIterator = multipartMimeContent.getContents();
+    Content part1 = partContentIterator.next();
+    Content part2 = partContentIterator.next();
+
+    assertEquals("message/sip", ((ContentType) part1.getContentTypeHeader()).getValue());
+    assertFalse(part1.getExtensionHeaders().hasNext());
+    assertNotNull(part1.getContent());
+
+    assertEquals("application/pkcs7-signature;name=smime.p7s", ((ContentType) part2.getContentTypeHeader()).getValue());
+    assertTrue(part2.getExtensionHeaders().hasNext());
+    assertEquals("ghyHhHUujhJhjH77n8HHGTrfvbnj756tbB9HG4VQpfyF467GhIGfHfYT6\n"
+                 + "4VQpfyF467GhIGfHfYT6jH77n8HHGghyHhHUujhJh756tbB9HGTrfvbnj\n"
+                 + "n8HHGTrfvhJhjH776tbB9HG4VQbnj7567GhIGfHfYT6ghyHhHUujpfyF4\n"
+                 + "7GhIGfHfYT64VQbnj756\n", part2.getContent());
+    
+  }
+  
+
+  private void checkSimpleBody(MultipartMimeContent multipartMimeContent) {
+    Iterator<Content> partContentIterator = multipartMimeContent.getContents();
+    Content sdpPart = partContentIterator.next();
+    
+    assertEquals("application/sdp", ((ContentType) sdpPart.getContentTypeHeader()).getValue());
+    assertFalse(sdpPart.getExtensionHeaders().hasNext());
+    
+    assertNotNull(sdpPart.getContent());
+    assertFalse(partContentIterator.hasNext());
   }
 
   private byte[] toByteArray(InputStream input) throws IOException {
