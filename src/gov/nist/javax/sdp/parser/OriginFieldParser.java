@@ -59,11 +59,11 @@ public class OriginFieldParser extends SDPParser {
             Token sessionId = lexer.getNextToken();
             // guard against very long session IDs
             String sessId = sessionId.getTokenValue();
-            if (sessId.length() > 18)
-                sessId = sessId.substring(sessId.length() - 18);
             try {
                 originField.setSessId(Long.parseLong(sessId));
             } catch (NumberFormatException ex) {
+                if (sessId.length() > 18)
+                    sessId = sessId.substring(sessId.length() - 18);
                 originField.setSessionId(sessId);
             }
             this.lexer.SPorHT();
@@ -72,11 +72,11 @@ public class OriginFieldParser extends SDPParser {
             Token sessionVersion = lexer.getNextToken();
             // guard against very long session Verion
             String sessVer = sessionVersion.getTokenValue();
-            if (sessVer.length() > 18)
-                sessVer = sessVer.substring(sessVer.length() - 18);
             try {
                 originField.setSessVersion(Long.parseLong(sessVer));
             } catch (NumberFormatException ex) {
+                if (sessVer.length() > 18)
+                    sessVer = sessVer.substring(sessVer.length() - 18);
                 originField.setSessVersion(sessVer);
 
             }
