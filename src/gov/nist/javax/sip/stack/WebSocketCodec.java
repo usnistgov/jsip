@@ -253,7 +253,7 @@ public class WebSocketCodec {
 			frame.write(b0);
 			frame.write(maskPayload ? 0xFF : 127);
 			for(int q=0;q<8;q++) {
-				frame.write((0xFF)&(length>>q));
+				frame.write((0xFF)&(length>>q*8));
 			}
 		}
 		if(maskPayload) {
