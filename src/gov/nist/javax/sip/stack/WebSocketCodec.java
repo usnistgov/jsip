@@ -152,7 +152,7 @@ public class WebSocketCodec {
 			} else if (framePayloadLen1 == 127) {
 				long value = 0;
 				for(int q=0;q<8;q++) {
-					value &= (0xff&readNextByte())<<(7-q);
+					value &= (0xff&readNextByte())<<(7-q)*8;
 				}
 				framePayloadLength = value;
 
@@ -253,7 +253,7 @@ public class WebSocketCodec {
 			frame.write(b0);
 			frame.write(maskPayload ? 0xFF : 127);
 			for(int q=0;q<8;q++) {
-				frame.write((0xFF)&(length>>q));
+				frame.write((0xFF)&(length>>q*8));
 			}
 		}
 		if(maskPayload) {
