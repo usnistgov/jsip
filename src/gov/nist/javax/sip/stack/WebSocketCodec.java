@@ -152,7 +152,7 @@ public class WebSocketCodec {
 			} else if (framePayloadLen1 == 127) {
 				long value = 0;
 				for(int q=0;q<8;q++) {
-					value &= (0xff&readNextByte())<<(7-q);
+					value &= (0xff&readNextByte())<<(7-q)*8;
 				}
 				framePayloadLength = value;
 
