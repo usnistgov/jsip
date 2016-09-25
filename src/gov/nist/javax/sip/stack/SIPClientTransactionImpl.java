@@ -1924,6 +1924,12 @@ public class SIPClientTransactionImpl extends SIPTransactionImpl implements SIPC
       // SIPTransactionStack.CONNECTION_LINGER_TIME * 1000);
       // }
     }
+    
+    // If dialog is null state, no response is received and we should clean it up now, 
+    // it's hopeless to recover. Refers to this issue https://github.com/usnistgov/jsip/issues/8
+    if(this.defaultDialog != null && this.defaultDialog.getState() == null) {
+    	this.defaultDialog.setState(SIPDialog.TERMINATED_STATE);
+    }
 
   }
 
