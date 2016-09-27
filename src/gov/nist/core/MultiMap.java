@@ -32,6 +32,6 @@ import java.util.Map;
  */
 public interface MultiMap extends Map {
     
-    public Object remove( Object key, Object item );
+    public Object removeKV( Object key, Object item );
    
 }
