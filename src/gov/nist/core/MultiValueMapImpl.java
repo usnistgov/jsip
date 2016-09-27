@@ -150,7 +150,7 @@ public class MultiValueMapImpl<V> implements MultiValueMap<String, V>, Cloneable
         return this.map.keySet();
     }
 
-    public Object remove(String key, V item) {
+    public Object removeKV(String key, V item) {
     	if(map == null) {
     		return null;
     	}
