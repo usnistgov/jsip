@@ -104,7 +104,7 @@ public class WebSocketCodec {
 							" avail " + availToRead + " newSize " + newSize);
 				}
 				byte[] resizeBuffer = new byte[newSize];
-				for(int q=0; q<writeIndex; q++) resizeBuffer[q] = this.decodeBuffer[q];
+				System.arraycopy(this.decodeBuffer, 0, resizeBuffer, 0, writeIndex);
 				this.decodeBuffer = resizeBuffer;
 			}
 
