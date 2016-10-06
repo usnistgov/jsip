@@ -94,13 +94,14 @@ public class WebSocketCodec {
 	public byte[] decode(InputStream is)
 			throws Exception {
 		do {
-			// Attempt to resize the buffer when it's approaching a big chunk size
+			// Attempt to resize the decode buffer when it's approaching capacity
 			int bytesLeft = decodeBuffer.length - writeIndex;
 			int availToRead = is.available();
 			if(availToRead > bytesLeft - 1) {
 				int newSize = Math.max(2*decodeBuffer.length, 4*availToRead);
 				if(logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-					logger.logDebug("Doubling buffer size from " + decodeBuffer.length + " avail " + availToRead + " newSize " + newSize);
+					logger.logDebug("Increasing buffer size from " + decodeBuffer.length + 
+							" avail " + availToRead + " newSize " + newSize);
 				}
 				byte[] resizeBuffer = new byte[newSize];
 				for(int q=0; q<writeIndex; q++) resizeBuffer[q] = this.decodeBuffer[q];
@@ -108,15 +109,13 @@ public class WebSocketCodec {
 			}
 
 			int bytesRead = is.read(decodeBuffer, writeIndex, bytesLeft);
-
-
 			if(bytesRead < 0) bytesRead = 0;
 
 			// Update the count in the buffer
 			writeIndex += bytesRead;
 		} while(is.available()>0);
 
-		// Start over from scratch. This is rare and doesn't affect performance
+		// Start over from scratch. If the frame is big this may be repeated a few times O(logN) and doesn't affect performance
 		readIndex = 0;
 		
 		// All TCP slow-start algorithms will be cut off right here without further analysis
