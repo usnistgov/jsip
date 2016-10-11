@@ -53,6 +53,8 @@ public class WebSocketCodec {
 	private static final byte OPCODE_PING = 0x9;
 	private static final byte OPCODE_PONG = 0xA;
 
+	private static final byte[] trivialMask = new byte[] {1,1,1,1};
+
 	// Websocket metadata
 	private int fragmentedFramesCount;
 	private boolean frameFinalFlag;
@@ -69,7 +71,7 @@ public class WebSocketCodec {
 	private int payloadStartIndex = -1;
 
 	// Buffering incomplete and overflowing frames
-	private byte[] buffer = new byte[66000];
+	private byte[] decodeBuffer = new byte[2048];
 	private int writeIndex = 0;
 	private int readIndex;
 	
@@ -86,19 +88,34 @@ public class WebSocketCodec {
 		if(readIndex >= writeIndex) {
 			throw new IllegalStateException();
 		}
-		return this.buffer[readIndex++];
+		return this.decodeBuffer[readIndex++];
 	}
 
 	public byte[] decode(InputStream is)
 			throws Exception {
-		int bytesRead = is.read(buffer, writeIndex, buffer.length - writeIndex);
-		
-		if(bytesRead < 0) bytesRead = 0;
-		
-		// Update the count in the buffer
-		writeIndex += bytesRead;
-		
-		// Start over from scratch. This is rare and doesn't affect performance
+		do {
+			// Attempt to resize the decode buffer when it's approaching capacity
+			int bytesLeft = decodeBuffer.length - writeIndex;
+			int availToRead = is.available();
+			if(availToRead > bytesLeft - 1) {
+				int newSize = Math.max(2*decodeBuffer.length, 4*availToRead);
+				if(logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+					logger.logDebug("Increasing buffer size from " + decodeBuffer.length + 
+							" avail " + availToRead + " newSize " + newSize);
+				}
+				byte[] resizeBuffer = new byte[newSize];
+				System.arraycopy(this.decodeBuffer, 0, resizeBuffer, 0, writeIndex);
+				this.decodeBuffer = resizeBuffer;
+			}
+
+			int bytesRead = is.read(decodeBuffer, writeIndex, bytesLeft);
+			if(bytesRead < 0) bytesRead = 0;
+
+			// Update the count in the buffer
+			writeIndex += bytesRead;
+		} while(is.available()>0);
+
+		// Start over from scratch. If the frame is big this may be repeated a few times O(logN) and doesn't affect performance
 		readIndex = 0;
 		
 		// All TCP slow-start algorithms will be cut off right here without further analysis
@@ -152,7 +169,10 @@ public class WebSocketCodec {
 			} else if (framePayloadLen1 == 127) {
 				long value = 0;
 				for(int q=0;q<8;q++) {
-					value &= (0xff&readNextByte())<<(7-q)*8;
+					byte nextByte = readNextByte();
+					long valuePart = ((long)(0xff&nextByte));
+					valuePart <<= (7-q)*8;
+					value |= valuePart;
 				}
 				framePayloadLength = value;
 
@@ -160,6 +180,7 @@ public class WebSocketCodec {
 					protocolViolation("invalid data frame length (not using minimal length encoding): " + framePayloadLength);
 					return null;
 				}
+				
 			} else {
 				framePayloadLength = framePayloadLen1;
 			}
@@ -197,16 +218,16 @@ public class WebSocketCodec {
 
 		// Unmask data if needed and only if the condition above is true
 		if (frameMasked) {
-			unmask(buffer, payloadStartIndex, (int) (payloadStartIndex + framePayloadLength));
+			unmask(decodeBuffer, payloadStartIndex, (int) (payloadStartIndex + framePayloadLength));
 		}
 
 		// Finally isolate the unmasked payload, the bytes are plaintext here
 		byte[] plainTextBytes = new byte[(int) framePayloadLength];
-		System.arraycopy(buffer, payloadStartIndex, plainTextBytes, 0, (int) framePayloadLength);
+		System.arraycopy(decodeBuffer, payloadStartIndex, plainTextBytes, 0, (int) framePayloadLength);
 		
 		// Now move the pending data to the begining of the buffer so we can continue having good stream
 		for(int q=1; q<writeIndex - totalPacketLength; q++) {
-			buffer[q] = buffer[(int)totalPacketLength + q];
+			decodeBuffer[q] = decodeBuffer[(int)totalPacketLength + q];
 		}
 		writeIndex -= totalPacketLength;
 		
@@ -253,13 +274,13 @@ public class WebSocketCodec {
 			frame.write(b0);
 			frame.write(maskPayload ? 0xFF : 127);
 			for(int q=0;q<8;q++) {
-				frame.write((byte)(length>>>(7-q)*8));
+				byte b = (byte)(length>>>(7-q)*8);
+				frame.write(b);
 			}
 		}
 		if(maskPayload) {
-			byte[] mask = new byte[] {1,1,1,1};
-			frame.write(mask);
-			applyMask(msg, 0, msg.length, mask);
+			frame.write(trivialMask);
+			applyMask(msg, 0, msg.length, trivialMask);
 		}
 		frame.write(msg);
 		return frame.toByteArray();
