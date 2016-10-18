@@ -372,13 +372,10 @@ public class MultipartMimeParserTest extends TestCase {
 	    
 	    request.setContent(content, contentType);
 	    MultipartMimeContent multipartMimeContent = request.getMultipartMimeContent();
-	    checkMultiPartWithSpaces(multipartMimeContent);
-	    
-	    // let's now marshall back the body and reparse it to check consistency
-	    String bodyContent = multipartMimeContent.toString();
-	    request.setContent(bodyContent, contentType);
-	    MultipartMimeContent multipartMimeContent2 = request.getMultipartMimeContent();
-	    checkMultiPartWithSpaces(multipartMimeContent2);
+	    Iterator<Content> partContentIterator = multipartMimeContent.getContents();
+	    Content part1 = partContentIterator.next();
+	    Content part2 = partContentIterator.next();
+	    assertEquals("application/rs-metadata+xml", ((ContentType) part2.getContentTypeHeader()).getValue());
 	  }
   
   public void testMultiPartMimeMarshallingAndUnMarshallingWithANonMultiPartBodyWithAnEmptyLine() throws Exception {
