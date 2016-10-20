@@ -36,6 +36,7 @@ import java.text.ParseException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import javax.sip.header.ContentDispositionHeader;
@@ -121,9 +122,13 @@ public class MultipartMimeContentImpl implements MultipartMimeContent {
       // scanner.useDelimiter("--" + boundary + "(--)?\r?\n?");
       scanner.useDelimiter("\r?\n?--" + boundary + "(--)?\r?\n?");
       while (scanner.hasNext()) {
-        String bodyPart = scanner.next();
-        Content partContent = parseBodyPart(bodyPart);
-        contentList.add(partContent);
+    	  try {
+    		  String bodyPart = scanner.next();
+    		  Content partContent = parseBodyPart(bodyPart);
+    		  contentList.add(partContent);
+    	  } catch (NoSuchElementException e) {
+    		  //ignore
+    	  }
       }
     } else {
       // No boundary had been set, we will consider the body as a single part
