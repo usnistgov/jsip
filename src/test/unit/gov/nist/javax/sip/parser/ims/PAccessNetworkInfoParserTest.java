@@ -33,6 +33,9 @@ public class PAccessNetworkInfoParserTest extends ParserTestCase
         // TODO Auto-generated method stub
 
         String[] accessNetworkInfo =  {
+        		"P-Access-Network-Info: 3GPP-UTRAN-TDD; utran-cell-id-3gpp=23456789ABCDE; [123:4::abcd]\n",
+        		"P-Access-Network-Info: 3GPP-UTRAN-TDD; utran-cell-id-3gpp=23456789ABCDE;\"ip=123.123.123.123\"\n",
+
 
                 "P-Access-Network-Info: IEEE-802.11\n",
 
