@@ -479,6 +479,56 @@ public class LexerCore extends StringTokenizer {
             return null;
         }
     }
+    
+    public String ttokenGenValue() {
+        int startIdx = ptr;
+        try {
+            while (hasMoreChars()) {
+                char nextChar = lookAhead(0);
+                if (isAlphaDigit(nextChar)) {
+                    consume(1);
+                }
+                else {
+                    boolean isValidChar = false;
+                    switch (nextChar) {
+                        case '_':
+                        case '+':
+                        case '-':
+                        case '!':
+                        case '`':
+                        case '\'':
+                        case '.':
+                        case '/':
+                        case '}':
+                        case '{':
+                        case ']':
+                        case '[':
+                        case '^':
+                        case '|':
+                        case '~':
+                        case '%': // bug fix by Bruno Konik, JvB copied here
+                        case '#':
+                        case '@':
+                        case '$':
+                        case ':':
+                        case '?':
+                        case '\"':
+                        case '*':
+                            isValidChar = true;
+                    }
+                    if (isValidChar) {
+                        consume(1);
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+            return String.valueOf(buffer, startIdx, ptr - startIdx);
+        } catch (ParseException ex) {
+            return null;
+        }
+    }
 
     static final char ALPHA_VALID_CHARS = Character.MAX_VALUE;
     static final char DIGIT_VALID_CHARS = Character.MAX_VALUE - 1;
