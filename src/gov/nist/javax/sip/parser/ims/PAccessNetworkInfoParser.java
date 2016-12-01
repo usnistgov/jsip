@@ -63,7 +63,8 @@ import gov.nist.javax.sip.parser.TokenTypes;
  * gen-value              = token / host / quoted-string
  * </pre>
  * 
- * <p>https://tools.ietf.org/html/rfc7913</p>
+ * <p>RFC 7913 - P-Access-Network-Info ABNF Update </p>
+ * <p>Newer RFC https://tools.ietf.org/html/rfc7913</p>
  * <pre>
  *       access-info            = cgi-3gpp / utran-cell-id-3gpp /
  *                                dsl-location / i-wlan-node-id /
@@ -128,7 +129,9 @@ public class PAccessNetworkInfoParser
                 	if(ext == null) {
                 		ext = this.lexer.ttokenGenValue();
                 	} else {
-                		ext = "\"" + ext + "\"";
+                		// avoids tokens such as "a=b" to be stripped of quotes and misinterpretend as
+                		// RFC 7913 generic-param when re-encoded
+                		ext = "\"" + ext + "\""; 
                 	}
                 	accessNetworkInfo.setExtensionAccessInfo(ext);
                 }
