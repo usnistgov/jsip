@@ -34,8 +34,15 @@ public class PAccessNetworkInfoParserTest extends ParserTestCase
 
         String[] accessNetworkInfo =  {
 
+        		"P-Access-Network-Info: 3GPP-UTRAN-TDD; utran-cell-id-3gpp=23456789ABCDE; [123:4::abcd]; rand=l\n",
+        		"P-Access-Network-Info: 3GPP-UTRAN-TDD; utran-cell-id-3gpp=23456789ABCDE; a-b.c1; rand=l\n",
+        		"P-Access-Network-Info: 3GPP-UTRAN-TDD; utran-cell-id-3gpp=23456789ABCDE; 127.0.0.1; rand=l\n",
+        		"P-Access-Network-Info: 3GPP-UTRAN-TDD; utran-cell-id-3gpp=23456789ABCDE;\"\"\n",
+        		"P-Access-Network-Info: 3GPP-UTRAN-TDD; utran-cell-id-3gpp=23456789ABCDE;\";\"\n",
+        		"P-Access-Network-Info: 3GPP-UTRAN-TDD; utran-cell-id-3gpp=23456789ABCDE;\"ip=123.123.123.123\"\n",
+        		"P-Access-Network-Info: 3GPP-UTRAN-TDD; utran-cell-id-3gpp=23456789ABCDE; [123:4::abcd];rand=l\n",
+        		"P-Access-Network-Info: 3GPP-UTRAN-TDD; utran-cell-id-3gpp=23456789ABCDE; [123:4::abcd]\n",
                 "P-Access-Network-Info: IEEE-802.11\n",
-
                 "P-Access-Network-Info: 3GPP-UTRAN-TDD; utran-cell-id-3gpp=23456789ABCDE\n"
 
         };

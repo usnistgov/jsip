@@ -49,7 +49,7 @@ import gov.nist.javax.sip.parser.TokenTypes;
  * <p>RFC 3455 - Private Header (P-Header) Extensions to the Session Initiation
  *   Protocol (SIP) for the 3rd-Generation Partnership Project (3GPP) </p>
  *
- * <p>Sintax (RFC 3455):</p>
+ * <p>Syntax (RFC 3455):</p>
  * <pre>
  * P-Access-Network-Info  = "P-Access-Network-Info" HCOLON access-net-spec
  * access-net-spec        = access-type *(SEMI access-info)
@@ -60,7 +60,23 @@ import gov.nist.javax.sip.parser.TokenTypes;
  * extension-access-info  = gen-value
  * cgi-3gpp               = "cgi-3gpp" EQUAL (token / quoted-string)
  * utran-cell-id-3gpp     = "utran-cell-id-3gpp" EQUAL (token / quoted-string)
+ * gen-value              = token / host / quoted-string
  * </pre>
+ * 
+ * <p>RFC 7913 - P-Access-Network-Info ABNF Update </p>
+ * <p>Newer RFC https://tools.ietf.org/html/rfc7913</p>
+ * <pre>
+ *       access-info            = cgi-3gpp / utran-cell-id-3gpp /
+ *                                dsl-location / i-wlan-node-id /
+ *                                ci-3gpp2 / eth-location /
+ *                                ci-3gpp2-femto / fiber-location /
+ *                                np / gstn-location /local-time-zone /
+ *                                dvb-rcs2-node-id / operator-specific-GI /
+ *                                utran-sai-3gpp / extension-access-info
+ *       np                     = "network-provided"
+ *       extension-access-info  = generic-param
+ * </pre>
+ * 
  *
  * @author Miguel Freitas (IT) PT-Inovacao
  */
@@ -104,8 +120,21 @@ public class PAccessNetworkInfoParser
                 this.lexer.match(';');
                 this.lexer.SPorHT();
 
-                NameValue nv = super.nameValue('=');
-                accessNetworkInfo.setParameter(nv);
+                try {
+                	NameValue nv = super.nameValue('=');
+                	accessNetworkInfo.setParameter(nv);
+                } catch (ParseException e) {
+                	this.lexer.SPorHT();
+                	String ext = this.lexer.quotedString();
+                	if(ext == null) {
+                		ext = this.lexer.ttokenGenValue();
+                	} else {
+                		// avoids tokens such as "a=b" to be stripped of quotes and misinterpretend as
+                		// RFC 7913 generic-param when re-encoded
+                		ext = "\"" + ext + "\""; 
+                	}
+                	accessNetworkInfo.setExtensionAccessInfo(ext);
+                }
                 this.lexer.SPorHT();
             }
             this.lexer.SPorHT();
