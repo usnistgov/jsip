@@ -153,11 +153,15 @@ public class MultipartMimeContentImpl implements MultipartMimeContent {
       // the body and don't split on any crlf in the body  
       String[] nextPartSplit = bodyPart.split("\r?\n\r?\n", 2);
 
+      bodyContent = bodyPart;
+      
       if (nextPartSplit.length == 2) {
-        headers = nextPartSplit[0].split("\r?\n");
-        bodyContent = nextPartSplit[1];
-      } else {
-        bodyContent = bodyPart;
+        // since we aren't completely sure the data is a header let's test the first one
+        String potentialHeaders[] = nextPartSplit[0].split("\r?\n");
+        if (potentialHeaders[0].indexOf(":") > 0) {
+          headers = potentialHeaders;
+          bodyContent = nextPartSplit[1];
+        }
       }
     }
     

@@ -203,6 +203,12 @@ public class MultipartMimeParserTest extends TestCase {
     + "a=fmtp:101 0-15\n"
     + "\n";
   
+  private static String isup = "^A^P`^@\n" 
+    +"^C^F^M^Cï¿½ï¿½ï¿½^G^C^P^Tf49^U\n"
+    +"\n"
+    + "ï¿½^S^U^@atï¿½D^Q^Eï¿½^A^@ï¿½^G^C^P^T6pw\"ï¿½^C^Px'ï¿½&^@^@\"\n"
+    + "\n";
+  
   private static String multipartContentWithEmptyLine = "\n"
     + "--boundary1\n"
     + "Content-Type: message/sip\n"
@@ -390,6 +396,22 @@ public class MultipartMimeParserTest extends TestCase {
   public void testMultiPartMimeMarshallingAndUnMarshallingWithANonMultiPartBodyWithAnEmptyLine() throws Exception {
     SIPRequest request = new SIPRequest();
     byte[] content = simpleContentWithEmptyLine.getBytes("UTF-8");
+    ContentType contentType = new ContentType("application", "sdp");
+    request.setContent(content, contentType);
+    MultipartMimeContent multipartMimeContent = request.getMultipartMimeContent();
+    checkSimpleBody(multipartMimeContent);
+    
+    // let's now marshall back the body and reparse it to check consistency
+    // we just want the content, not the boundaries (which are null)
+    String bodyContent = multipartMimeContent.getContents().next().getContent().toString();
+    request.setContent(bodyContent, contentType);
+    MultipartMimeContent multipartMimeContent2 = request.getMultipartMimeContent();
+    checkSimpleBody(multipartMimeContent2);
+  }
+  
+  public void testMultiPartMimeMarshallingAndUnMarshallingWithANonMultiPartBodyWithAnEmptyLineWithNoLeadingLine() throws Exception {
+    SIPRequest request = new SIPRequest();
+    byte[] content = isup.getBytes("UTF-8");
     ContentType contentType = new ContentType("application", "sdp");
     request.setContent(content, contentType);
     MultipartMimeContent multipartMimeContent = request.getMultipartMimeContent();
