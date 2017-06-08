@@ -60,6 +60,7 @@ public class MultipartMimeContentImpl implements MultipartMimeContent {
   private ContentTypeHeader multipartMimeContentTypeHeader;
   private String boundary;
 
+  
   /**
    * Creates a default content list.
    */
@@ -127,7 +128,9 @@ public class MultipartMimeContentImpl implements MultipartMimeContent {
     		  Content partContent = parseBodyPart(bodyPart);
     		  contentList.add(partContent);
     	  } catch (NoSuchElementException e) {
-    		  //ignore
+    		  // ignore
+    	    // this is needed for a jain sip bug #16: the scanner which detects an extra
+    	    // delimiter when the body is a multiple of the buffer size
     	  }
       }
     } else {
