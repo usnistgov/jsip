@@ -229,6 +229,8 @@ public class SIPClientTransactionImpl extends SIPTransactionImpl implements SIPC
   private AtomicBoolean timerKStarted = new AtomicBoolean(false);
   private boolean transactionTimerCancelled = false;
   private Set<Integer> responsesReceived = new CopyOnWriteArraySet<Integer>();
+  
+  private boolean terminateDialogOnCleanUp = true;
 
   public class TransactionTimer extends SIPStackTimerTask {
 
@@ -1925,10 +1927,12 @@ public class SIPClientTransactionImpl extends SIPTransactionImpl implements SIPC
       // }
     }
     
-    // If dialog is null state, no response is received and we should clean it up now, 
-    // it's hopeless to recover. Refers to this issue https://github.com/usnistgov/jsip/issues/8
-    if(this.defaultDialog != null && this.defaultDialog.getState() == null) {
-    	this.defaultDialog.setState(SIPDialog.TERMINATED_STATE);
+    if (terminateDialogOnCleanUp) {
+      // If dialog is null state, no response is received and we should clean it up now, 
+      // it's hopeless to recover. Refers to this issue https://github.com/usnistgov/jsip/issues/8
+      if(this.defaultDialog != null && this.defaultDialog.getState() == null) {
+      	this.defaultDialog.setState(SIPDialog.TERMINATED_STATE);
+      }
     }
 
   }
@@ -1988,4 +1992,11 @@ public class SIPClientTransactionImpl extends SIPTransactionImpl implements SIPC
     return originalRequest.getRequestURI().getScheme();
   }
 
+  /**
+   * @see gov.nist.javax.sip.stack.SIPClientTransaction#setTerminateDialogOnCleanUp(boolean)
+   */
+  public void setTerminateDialogOnCleanUp(boolean enabled) {
+    terminateDialogOnCleanUp = enabled;
+  }
+  
 }

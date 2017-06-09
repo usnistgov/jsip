@@ -226,4 +226,11 @@ public interface SIPClientTransaction extends ClientTransactionExt, SIPTransacti
    * @return the originalRequestFromTag
    */
   public abstract String getOriginalRequestScheme();
+  
+  /**
+   * will terminate a null state dialog when the transaction terminates 
+   * Default: true
+   * @param enabled
+   */
+  public abstract void setTerminateDialogOnCleanUp(boolean enabled);
 }
