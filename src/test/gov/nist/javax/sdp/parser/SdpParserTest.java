@@ -92,7 +92,16 @@ public class SdpParserTest extends TestCase {
     public void testAttribEquals() throws Exception {
         AttributeField f1 = new AttributeFieldParser("a=sendrecv").attributeField();
         AttributeField f2 = new AttributeFieldParser("a=sendrecv").attributeField();
-        f1.equals(f2);
+        AttributeField f3 = new AttributeFieldParser("a=sendonly").attributeField();
+        AttributeField f4 = new AttributeFieldParser("a=f:sendonly").attributeField();
+        AttributeField f5 = new AttributeFieldParser("a=f:sendonly").attributeField();
+        AttributeField f6 = new AttributeFieldParser("a=ff:sendonly").attributeField();
+        f1.equals(f2); // NPE here Issue 25
+        assertEquals(f1, f2);
+        assertFalse(f2.equals(f3));
+        assertFalse(f4.equals(f3));
+        assertEquals(f5, f4);
+        assertFalse(f5.equals(f6));
     }
 
     public void testSdpParser() throws Exception {
