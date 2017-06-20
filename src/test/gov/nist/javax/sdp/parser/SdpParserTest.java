@@ -1,6 +1,8 @@
 package test.gov.nist.javax.sdp.parser;
 
 import gov.nist.javax.sdp.SessionDescriptionImpl;
+import gov.nist.javax.sdp.fields.AttributeField;
+import gov.nist.javax.sdp.parser.AttributeFieldParser;
 import gov.nist.javax.sdp.parser.SDPAnnounceParser;
 
 import java.io.File;
@@ -85,6 +87,12 @@ public class SdpParserTest extends TestCase {
             assertNotNull(nt);
             assertNotNull(md);
 
+    }
+    
+    public void testAttribEquals() throws Exception {
+        AttributeField f1 = new AttributeFieldParser("a=sendrecv").attributeField();
+        AttributeField f2 = new AttributeFieldParser("a=sendrecv").attributeField();
+        f1.equals(f2);
     }
 
     public void testSdpParser() throws Exception {
