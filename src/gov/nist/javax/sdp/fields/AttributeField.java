@@ -183,8 +183,15 @@ public class AttributeField extends SDPField implements javax.sdp.Attribute {
     public boolean equals(Object that ) {
         if ( ! (that instanceof AttributeField)) return false;
         AttributeField other = (AttributeField) that;
-        return other.getAttribute().getName().equalsIgnoreCase(this.getAttribute().getName()) &&
-                this.getAttribute().getValueAsObject().equals(other.getAttribute().getValueAsObject());
+        boolean equalNames = other.getAttribute().getName().equalsIgnoreCase(this.getAttribute().getName());
+        boolean equalValues;
+        if(this.getAttribute().getValueAsObject() != null) {
+        	equalValues = this.getAttribute().getValueAsObject().equals(other.getAttribute().getValueAsObject());
+        } else {
+        	equalValues = (other.getAttribute().getValueAsObject() == null);
+        }
+        
+        return equalNames && equalValues;
     }
     
     @Override
