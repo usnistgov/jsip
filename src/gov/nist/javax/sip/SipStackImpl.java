@@ -934,6 +934,10 @@ public class SipStackImpl extends SIPTransactionStack implements
 		if ( super.isAutomaticDialogSupportEnabled ) {
 			super.isAutomaticDialogErrorHandlingEnabled = true;
 		}
+		
+		super.isServerLoopDetectionEnabled = configurationProperties
+      .getProperty("gov.nist.javax.sip.SERVER_LOOP_DETECTION","on")
+      .equalsIgnoreCase("on");
 	
 		if (configurationProperties
 				.getProperty("gov.nist.javax.sip.MAX_LISTENER_RESPONSE_TIME") != null) {
@@ -1919,6 +1923,10 @@ public class SipStackImpl extends SIPTransactionStack implements
 	public boolean isAutomaticDialogErrorHandlingEnabled() {
 		return super.isAutomaticDialogErrorHandlingEnabled;
 	}
+	
+	public boolean isServerLoopDetectionEnabled() {
+    return super.isServerLoopDetectionEnabled;
+  }
 
 	
 	public void setTlsSecurityPolicy(TlsSecurityPolicy tlsSecurityPolicy) {
