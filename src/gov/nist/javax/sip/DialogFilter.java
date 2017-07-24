@@ -417,6 +417,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
          * Support.
          */
         if (sipProvider.isDialogErrorsAutomaticallyHandled()
+                && sipProvider.isLoopDetectionEnabled()
                 && sipRequest.getToTag() == null) {
             if (sipStack.findMergedTransaction(sipRequest)) {
                 this.sendLoopDetectedResponse(sipRequest, transaction);

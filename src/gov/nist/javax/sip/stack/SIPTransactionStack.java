@@ -346,7 +346,9 @@ public abstract class SIPTransactionStack implements
     protected boolean checkBranchId;
 
     protected boolean isAutomaticDialogErrorHandlingEnabled = true;
-
+    
+    protected boolean isServerLoopDetectionEnabled = true;
+    
     protected boolean isDialogTerminatedEventDeliveredForNullDialog = false;
 
     // Max time for a forked response to arrive. After this time, the original
