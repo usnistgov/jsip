@@ -47,7 +47,7 @@ public class NioTlsMessageProcessor extends NioTcpMessageProcessor{
     private static StackLogger logger = CommonLogger.getLogger(NioTlsMessageProcessor.class);
 
     // Create a trust manager that does not validate certificate chains
-    TrustManager[] trustAllCerts = new TrustManager[] { 
+    public static TrustManager[] trustAllCerts = new TrustManager[] { 
       new X509TrustManager() {
         public java.security.cert.X509Certificate[] getAcceptedIssuers() { 
           return new X509Certificate[0]; 

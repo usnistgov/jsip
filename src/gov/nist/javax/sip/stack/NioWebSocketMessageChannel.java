@@ -56,7 +56,7 @@ public class NioWebSocketMessageChannel extends NioTcpMessageChannel{
 	
 	private WebSocketCodec codec = new WebSocketCodec(true, true);
 	
-	boolean readingHttp = true;
+	volatile boolean readingHttp = true;
 	String httpInput = "";
 	boolean client;
 	boolean httpClientRequestSent;
