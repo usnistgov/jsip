@@ -304,15 +304,19 @@ public class UDPMessageProcessor extends MessageProcessor implements Runnable {
      * messages.
      */
     public void stop() {
-            this.isRunning = false;
-            sock.close();        
-          // closing the channels
-          for (Object messageChannel : messageChannels) {
-			((MessageChannel)messageChannel).close();
-          }
-          if(sipStack.stackCongenstionControlTimeout > 0 && congestionAuditor != null) {
-          	this.congestionAuditor.stop();
-          }
+    	this.isRunning = false;
+    	if(sock == null) {
+    		logger.logDebug("Socket was null, perhaps not started properly");
+    	} else {
+    		sock.close(); 
+    	}
+    	// closing the channels
+    	for (Object messageChannel : messageChannels) {
+    		((MessageChannel)messageChannel).close();
+    	}
+    	if(sipStack.stackCongenstionControlTimeout > 0 && congestionAuditor != null) {
+    		this.congestionAuditor.stop();
+    	}
     }
 
     /**

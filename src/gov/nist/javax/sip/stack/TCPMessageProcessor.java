@@ -161,7 +161,11 @@ public class TCPMessageProcessor extends ConnectionOrientedMessageProcessor impl
         isRunning = false;
         // this.listeningPoint = null;
         try {
-            sock.close();
+        	if(sock == null) {
+        		logger.logDebug("Socket was null, perhaps not started properly");
+        	} else {
+        		sock.close();
+        	}
         } catch (IOException e) {
             e.printStackTrace();
         }
