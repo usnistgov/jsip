@@ -214,7 +214,11 @@ public class TLSMessageProcessor extends ConnectionOrientedMessageProcessor impl
 
         isRunning = false;
         try {
-            sock.close();
+        	if(sock == null) {
+        		logger.logDebug("Socket was null, perhaps not started properly");
+        	} else {
+        		sock.close();
+        	}
         } catch (IOException e) {
             e.printStackTrace();
         }
