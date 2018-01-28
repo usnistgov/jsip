@@ -32,11 +32,16 @@ import gov.nist.core.LogWriter;
 import gov.nist.core.StackLogger;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngineResult.HandshakeStatus;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.channels.SocketChannel;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 public class NioTlsWebSocketMessageProcessor extends NioWebSocketMessageProcessor {
 
@@ -44,6 +49,8 @@ public class NioTlsWebSocketMessageProcessor extends NioWebSocketMessageProcesso
 
     SSLContext sslServerCtx;
     SSLContext sslClientCtx;
+    
+    private static int MAX_WAIT_ATTEMPTS = 100;
 
 	public NioTlsWebSocketMessageProcessor(InetAddress ipAddress,
 			SIPTransactionStack sipStack, int port) {
@@ -65,7 +72,7 @@ public class NioTlsWebSocketMessageProcessor extends NioWebSocketMessageProcesso
     }
 	
     @Override
-    public MessageChannel createMessageChannel(HostPort targetHostPort) throws IOException {
+    public synchronized MessageChannel createMessageChannel(HostPort targetHostPort) throws IOException {
     	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
     		logger.logDebug("NioTlsWebSocketMessageProcessor::createMessageChannel: " + targetHostPort);
     	}
@@ -75,6 +82,23 @@ public class NioTlsWebSocketMessageProcessor extends NioWebSocketMessageProcesso
 			
     		if (messageChannels.get(key) != null) {
     			retval = (NioTlsWebSocketMessageChannel) this.messageChannels.get(key);
+    			int wait;
+    			for(wait=0; wait<=MAX_WAIT_ATTEMPTS; wait++) {
+    				if(retval.readingHttp == true) {
+    					try {
+    						if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+    				    		logger.logDebug("NioTlsWebSocketMessageProcessor::createMessageChannel: waiting for TLS/HTTP handshake");
+    				    	}
+							Thread.sleep(100);
+						} catch (InterruptedException e) {}
+    				} else {
+    					if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+				    		logger.logDebug("NioTlsWebSocketMessageProcessor::createMessageChannel: after handshake wait=" + wait);
+				    	}
+    					break;
+    				}
+    			}
+    			if(wait == MAX_WAIT_ATTEMPTS) throw new IOException("Timed out waiting for TLS handshake");
     			return retval;
     		} else {
     			retval = new NioTlsWebSocketMessageChannel(targetHostPort.getInetAddress(),
@@ -101,7 +125,7 @@ public class NioTlsWebSocketMessageProcessor extends NioWebSocketMessageProcesso
     }
 
     @Override
-    public MessageChannel createMessageChannel(InetAddress targetHost, int port) throws IOException {
+    public synchronized MessageChannel createMessageChannel(InetAddress targetHost, int port) throws IOException {
         String key = MessageChannel.getKey(targetHost, port, transport);
         if (messageChannels.get(key) != null) {
             return this.messageChannels.get(key);
@@ -120,6 +144,7 @@ public class NioTlsWebSocketMessageProcessor extends NioWebSocketMessageProcesso
         }
 
     }
+    
 	public void init() throws Exception, CertificateException, FileNotFoundException, IOException {
 		if(sipStack.securityManagerProvider.getKeyManagers(false) == null ||
 				sipStack.securityManagerProvider.getTrustManagers(false) == null ||
@@ -131,15 +156,28 @@ public class NioTlsWebSocketMessageProcessor extends NioWebSocketMessageProcesso
 		}
 			
         sslServerCtx = SSLContext.getInstance("TLS");
-        sslServerCtx.init(sipStack.securityManagerProvider.getKeyManagers(false), 
-                sipStack.securityManagerProvider.getTrustManagers(false),
-                null);
-
         sslClientCtx = SSLContext.getInstance("TLS");
-        sslClientCtx.init(sipStack.securityManagerProvider.getKeyManagers(true),
-                sipStack.securityManagerProvider.getTrustManagers(true),
-                null);
+        
+        if(sipStack.getClientAuth() == ClientAuthType.DisabledAll) {
+        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                logger.logDebug(
+                        "ClientAuth " + sipStack.getClientAuth()  +  " bypassing all cert validations");
+            }
+        	sslServerCtx.init(sipStack.securityManagerProvider.getKeyManagers(false), NioTlsMessageProcessor.trustAllCerts, null);
+        	sslClientCtx.init(sipStack.securityManagerProvider.getKeyManagers(true), NioTlsMessageProcessor.trustAllCerts, null);
+        } else {
+        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                logger.logDebug(
+                        "ClientAuth " + sipStack.getClientAuth());
+            }
+        	 sslServerCtx.init(sipStack.securityManagerProvider.getKeyManagers(false), 
+                     sipStack.securityManagerProvider.getTrustManagers(false),
+                     null);
+        	 sslClientCtx.init(sipStack.securityManagerProvider.getKeyManagers(true),
+                     sipStack.securityManagerProvider.getTrustManagers(true),
+                     null);
 
+        }
     }
 
 }
