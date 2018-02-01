@@ -45,7 +45,7 @@ public interface SIPMessageListener extends ParseExceptionListener {
      */
     public void processMessage(SIPMessage msg) throws Exception;
 
-	public void sendSingleCLRF() throws Exception;
+	public void sendSingleCRLF() throws Exception;
 }
 /*
  * $Log: not supported by cvs2svn $

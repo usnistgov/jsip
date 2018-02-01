@@ -297,9 +297,9 @@ public class NioPipelineParser {
                 	crlfReceived = false;
 
                 	try {
-						sipMessageListener.sendSingleCLRF();
+						sipMessageListener.sendSingleCRLF();
 					} catch (Exception e) {						
-						logger.logError("A problem occured while trying to send a single CLRF in response to a double CLRF", e);
+						logger.logError("A problem occured while trying to send a single CRLF in response to a double CRLF", e);
 					}                	                	
             	} else {
             		crlfReceived = true;

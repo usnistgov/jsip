@@ -366,9 +366,9 @@ public final class PipelinedMsgParser implements Runnable {
                                 isPreviousLineCRLF = false;
 
                             	try {
-            						sipMessageListener.sendSingleCLRF();
+            						sipMessageListener.sendSingleCRLF();
             					} catch (Exception e) {						
-            						logger.logError("A problem occured while trying to send a single CLRF in response to a double CLRF", e);
+            						logger.logError("A problem occured while trying to send a single CRLF in response to a double CRLF", e);
             					}                	
                             	continue;
                         	} else {
