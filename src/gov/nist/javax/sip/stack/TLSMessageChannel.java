@@ -234,6 +234,8 @@ public class TLSMessageChannel extends ConnectionOrientedMessageChannel {
         }
     	  Socket sock = null;
         IOException problem = null;
+        // try to prevent at least the worst thread safety issues by using a local variable ...
+        Socket mySockLocal = mySock;
         try {
         	sock = this.sipStack.ioHandler.sendBytes(
                 this.getMessageProcessor().getIpAddress(), this.peerAddress, this.peerPort,
@@ -278,18 +280,22 @@ public class TLSMessageChannel extends ConnectionOrientedMessageChannel {
           		 close(false, false);
           	}    
           	if(problem == null) {
-          		if(mySock != null) {
+				if (mySockLocal != null) {
    	        		if(logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
    	        			logger.logWarning(
    	                		 "There was no exception for the retry mechanism so creating a new thread based on the new socket for incoming " + key);
    	        		}
           		}
-   	            mySock = sock;
-   	            this.myClientInputStream = mySock.getInputStream();
-   	            Thread thread = new Thread(this);
-   	            thread.setDaemon(true);
-   	            thread.setName("TCPMessageChannelThread");
-   	            thread.start();
+				// NOTE: need to consider refactoring the whole socket handling with respect to thread safety
+				if (mySockLocal == mySock) {
+					// still not thread safe :-( but what else to do?
+					mySock = sock;
+					this.myClientInputStream = mySock.getInputStream();
+					Thread thread = new Thread(this);
+					thread.setDaemon(true);
+					thread.setName("TCPMessageChannelThread");
+					thread.start();
+				}
           	} else {
           		if(logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
           			logger.logWarning(
