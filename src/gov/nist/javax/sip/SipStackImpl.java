@@ -1539,9 +1539,9 @@ public class SipStackImpl extends SIPTransactionStack implements
 				lip = new ListeningPointImpl(this, port, transport);
 				lip.messageProcessor = messageProcessor;
 				messageProcessor.setListeningPoint(lip);
-				this.listeningPoints.put(key, lip);
 				// start processing messages.
 				messageProcessor.start();
+				this.listeningPoints.put(key, lip);
 				if(socketTimeoutAuditor == null && nioSocketMaxIdleTime > 0 && messageProcessor instanceof ConnectionOrientedMessageProcessor) {
 		        	// https://java.net/jira/browse/JSIP-471 use property from the stack instead of hard coded 20s
 					socketTimeoutAuditor = new SocketTimeoutAuditor(nioSocketMaxIdleTime);
