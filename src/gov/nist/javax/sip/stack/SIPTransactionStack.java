@@ -101,10 +101,10 @@ public abstract class SIPTransactionStack implements
     protected ConcurrentHashMap<String, SIPServerTransaction> retransmissionAlertTransactions;
 
     // Table of early dialogs ( to keep identity mapping )
-    protected ConcurrentHashMap<String, SIPDialog> earlyDialogTable;
+    protected Map<String, SIPDialog> earlyDialogTable;
 
     // Table of dialogs.
-    protected ConcurrentHashMap<String, SIPDialog> dialogTable;
+    protected Map<String, SIPDialog> dialogTable;
 
     // Table of server dialogs ( for loop detection)
     protected ConcurrentHashMap<String, SIPDialog> serverDialogMergeTestTable;
@@ -3291,6 +3291,22 @@ public abstract class SIPTransactionStack implements
         }
         return false;
     }
+
+	public Map<String, SIPDialog> getEarlyDialogTable() {
+		return earlyDialogTable;
+	}
+
+	public void setEarlyDialogTable(Map<String, SIPDialog> earlyDialogTable) {
+		this.earlyDialogTable = earlyDialogTable;
+	}
+
+	public Map<String, SIPDialog> getDialogTable() {
+		return dialogTable;
+	}
+
+	public void setDialogTable(Map<String, SIPDialog> dialogTable) {
+		this.dialogTable = dialogTable;
+	}
 
 	/**
 	 * @return the sslHandshakeTimeout
