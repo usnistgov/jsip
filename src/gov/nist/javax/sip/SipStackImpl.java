@@ -564,8 +564,11 @@ import javax.sip.message.Request;
  * A Disabled value will not require a certificate chain for the Server Connection. A DisabledAll will not require a certificate chain for both Server and Client Connections.
  * </li>
  *
- *<li><b>gov.nist.javax.sip.RELIABLE_CONNECTION_KEEP_ALIVE_TIMEOUT</b> Value in seconds which is used as default keepalive timeout
- * (See also http://tools.ietf.org/html/rfc5626#section-4.4.1). Defaults to "infiinity" seconds (i.e. timeout event not delivered).</li>
+ * <li><b>gov.nist.javax.sip.RELIABLE_CONNECTION_KEEP_ALIVE_TIMEOUT</b> Value in seconds which is used as default keepalive timeout
+ * (See also http://tools.ietf.org/html/rfc5626#section-4.4.1). Defaults to "infinity" seconds (i.e. timeout event not delivered).</li>
+ *
+ *  <li><b>gov.nist.javax.sip.TCP_NODELAY = [true|false]</b>
+ *  Whether or not to disable Nagle's algorithm for TCP sockets. Defaults to {@code false}.</li>
  * 
  * <li><b>gov.nist.javax.sip.SSL_HANDSHAKE_TIMEOUT</b> Value in seconds which is used as default timeout for performing the SSL Handshake
  * This prevents bad clients of connecting without sending any data to block the server</li>
@@ -1102,6 +1105,12 @@ public class SipStackImpl extends SIPTransactionStack implements
 							"TCP post-parse thread pool size - bad value " + tcpTreadPoolSize + " : " + ex.getMessage());
 			}
 		}
+
+        String isTcpNoDelayEnabled = configurationProperties
+                .getProperty("gov.nist.javax.sip.TCP_NODELAY");
+        if (isTcpNoDelayEnabled != null) {
+            this.isTcpNoDelayEnabled = Boolean.parseBoolean(isTcpNoDelayEnabled);
+        }
 
 		String serverTransactionTableSize = configurationProperties
 				.getProperty("gov.nist.javax.sip.MAX_SERVER_TRANSACTIONS");

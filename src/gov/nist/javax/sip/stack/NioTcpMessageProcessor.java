@@ -33,6 +33,7 @@ import gov.nist.core.StackLogger;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.*;
@@ -237,6 +238,11 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
         	 ServerSocketChannel serverSocketChannel = (ServerSocketChannel) selectionKey.channel();
         	 SocketChannel client;
         	 client = serverSocketChannel.accept();
+
+             if (sipStack.isTcpNoDelayEnabled) {
+                 client.setOption(StandardSocketOptions.TCP_NODELAY, true);
+             }
+
         	 client.configureBlocking(false);
         	 if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
         		 logger.logDebug("got a new connection! " + client);
