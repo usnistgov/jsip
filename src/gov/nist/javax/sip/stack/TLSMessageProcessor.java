@@ -159,6 +159,9 @@ public class TLSMessageProcessor extends ConnectionOrientedMessageProcessor impl
                 }
                 
                 newsock = sock.accept();
+                if (sipStack.isTcpNoDelayEnabled) {
+                    newsock.setTcpNoDelay(true);
+                }
                
                 if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                     logger.logDebug("Accepting new connection!");

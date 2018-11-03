@@ -351,6 +351,8 @@ public abstract class SIPTransactionStack implements
     
     protected boolean isDialogTerminatedEventDeliveredForNullDialog = false;
 
+    protected boolean isTcpNoDelayEnabled = false;
+
     // Max time for a forked response to arrive. After this time, the original
     // dialog
     // is not tracked. If you want to track the original transaction you need to
