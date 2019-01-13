@@ -85,8 +85,11 @@ public class DefaultSecurityManagerProvider implements SecurityManagerProvider {
         keyManagerFactory = KeyManagerFactory.getInstance(algorithm);
         if(keyStoreFilename != null) {
         	final KeyStore ks = KeyStore.getInstance(keyStoreType);
-        	ks.load(new FileInputStream(new File(keyStoreFilename)), keyStorePassword.toCharArray());
-        	
+        	if(keyStorePassword != null) {
+        		ks.load(new FileInputStream(new File(keyStoreFilename)), keyStorePassword.toCharArray());
+        	} else {
+        		ks.load(new FileInputStream(new File(keyStoreFilename)), null);
+        	}
         	keyManagerFactory.init(ks, keyStorePassword.toCharArray());
         } else {
         	keyManagerFactory.init(null, null);
@@ -95,7 +98,11 @@ public class DefaultSecurityManagerProvider implements SecurityManagerProvider {
         trustManagerFactory = TrustManagerFactory.getInstance(algorithm);
         if(trustStoreFilename != null) {
         	final KeyStore ts = KeyStore.getInstance(trustStoreType);
-        	ts.load(new FileInputStream(new File(trustStoreFilename)), trustStorePassword.toCharArray());
+        	if(trustStorePassword != null) {
+        		ts.load(new FileInputStream(new File(trustStoreFilename)), trustStorePassword.toCharArray());
+        	} else {
+        		ts.load(new FileInputStream(new File(trustStoreFilename)), null);
+        	}
         	
         	trustManagerFactory.init((KeyStore) ts);
         } else {
