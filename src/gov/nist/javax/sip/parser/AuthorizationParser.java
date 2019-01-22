@@ -62,14 +62,16 @@ public class AuthorizationParser extends ChallengeParser {
      * @throws SIPParseException if the message does not respect the spec.
      */
     public SIPHeader parse() throws ParseException {
-        dbg_enter("parse");
+    	if (debug)
+    		dbg_enter("parse");
         try {
             headerName(TokenTypes.AUTHORIZATION);
             Authorization auth = new Authorization();
             super.parse(auth);
             return auth;
         } finally {
-            dbg_leave("parse");
+        	if (debug)
+        		dbg_leave("parse");
         }
     }
 

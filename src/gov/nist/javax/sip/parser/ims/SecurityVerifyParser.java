@@ -61,7 +61,8 @@ public class SecurityVerifyParser extends SecurityAgreeParser
 
     public SIPHeader parse() throws ParseException
     {
-        dbg_enter("SecuriryVerify parse");
+    	if (debug)
+    		dbg_enter("SecuriryVerify parse");
         try {
 
             headerName(TokenTypes.SECURITY_VERIFY);
@@ -71,7 +72,8 @@ public class SecurityVerifyParser extends SecurityAgreeParser
             return secVerifyList;
 
         } finally {
-            dbg_leave("SecuriryVerify parse");
+        	if (debug)
+        		dbg_leave("SecuriryVerify parse");
         }
     }
 

@@ -49,7 +49,8 @@ public class AddressParametersParser extends ParametersParser {
 
     protected void parse(AddressParametersHeader addressParametersHeader)
         throws ParseException {
-        dbg_enter("AddressParametersParser.parse");
+    	if (debug)
+    		dbg_enter("AddressParametersParser.parse");
         try {
             AddressParser addressParser = new AddressParser(this.getLexer());
             AddressImpl addr = addressParser.address(false);
@@ -69,7 +70,8 @@ public class AddressParametersParser extends ParametersParser {
         } catch (ParseException ex) {
             throw ex;
         } finally {
-            dbg_leave("AddressParametersParser.parse");
+        	if (debug)
+        		dbg_leave("AddressParametersParser.parse");
         }
     }
 }

@@ -62,7 +62,8 @@ public class SecurityServerParser extends SecurityAgreeParser
 
     public SIPHeader parse() throws ParseException
     {
-        dbg_enter("SecuriryServer parse");
+    	if (debug)
+    		dbg_enter("SecuriryServer parse");
         try {
 
             headerName(TokenTypes.SECURITY_SERVER);
@@ -72,7 +73,8 @@ public class SecurityServerParser extends SecurityAgreeParser
             return secServerList;
 
         } finally {
-            dbg_leave("SecuriryServer parse");
+        	if (debug)
+        		dbg_leave("SecuriryServer parse");
         }
     }
 
