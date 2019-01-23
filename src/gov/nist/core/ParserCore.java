@@ -40,7 +40,7 @@ import java.text.ParseException;
 public abstract class ParserCore {
     public static final boolean debug = Debug.parserDebug;
 
-    static int nesting_level;
+    static volatile int nesting_level;
 
     protected LexerCore lexer;
 

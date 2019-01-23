@@ -47,7 +47,8 @@ public class HeaderParser extends Parser {
      * @return an integer with the calendar content for wkday.
      */
     protected int wkday() throws ParseException {
-        dbg_enter("wkday");
+    	if (debug)
+    		dbg_enter("wkday");
         try {
             String tok = lexer.ttoken();
             String id = tok.toLowerCase();
@@ -69,7 +70,8 @@ public class HeaderParser extends Parser {
             else
                 throw createParseException("bad wkday");
         } finally {
-            dbg_leave("wkday");
+        	if (debug)
+        		dbg_leave("wkday");
         }
 
     }
