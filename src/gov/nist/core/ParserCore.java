@@ -26,6 +26,7 @@
 package gov.nist.core;
 
 import java.text.ParseException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Generic parser class.
 * All parsers inherit this class.
@@ -40,7 +41,7 @@ import java.text.ParseException;
 public abstract class ParserCore {
     public static final boolean debug = Debug.parserDebug;
 
-    static volatile int nesting_level;
+    static AtomicInteger nesting_level;
 
     protected LexerCore lexer;
 
@@ -99,7 +100,7 @@ public abstract class ParserCore {
 
     protected  void dbg_enter(String rule) {
         StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < nesting_level ; i++)
+        for (int i = 0; i < nesting_level.get() ; i++)
             stringBuilder.append(">");
 
         if (debug)  {
@@ -108,12 +109,12 @@ public abstract class ParserCore {
                 "\nlexer buffer = \n" +
                 lexer.getRest());
         }
-        nesting_level++;
+        nesting_level.incrementAndGet();
     }
 
     protected void dbg_leave(String rule) {
         StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < nesting_level ; i++)
+        for (int i = 0; i < nesting_level.get() ; i++)
             stringBuilder.append("<");
 
         if (debug)  {
@@ -123,7 +124,7 @@ public abstract class ParserCore {
                 "\nlexer buffer = \n" +
                 lexer.getRest());
         }
-        nesting_level --;
+        nesting_level.decrementAndGet();
     }
 
     protected NameValue nameValue() throws ParseException  {
