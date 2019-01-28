@@ -41,7 +41,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public abstract class ParserCore {
     public static final boolean debug = Debug.parserDebug;
 
-    static AtomicInteger nesting_level;
+    static AtomicInteger nesting_level =new AtomicInteger();
 
     protected LexerCore lexer;
 
