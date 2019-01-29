@@ -48,7 +48,7 @@ public class MediaFieldParser extends SDPParser {
     }
 
     public MediaField mediaField() throws ParseException {
-        if (Debug.parserDebug)
+        if (debug)
             dbg_enter("mediaField");
         try {
             MediaField mediaField = new MediaField();
@@ -120,6 +120,7 @@ public class MediaFieldParser extends SDPParser {
             //System.out.println("char = [" + lexer.lookAhead(0) +"]");
             throw new ParseException(lexer.getBuffer(), lexer.getPtr());
         } finally {
+        	if (debug)
             dbg_leave("mediaField");
         }
     }

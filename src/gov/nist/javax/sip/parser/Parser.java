@@ -96,7 +96,7 @@ public abstract class Parser extends ParserCore implements TokenTypes {
                 throw createParseException("Invalid Method");
             }
         } finally {
-            if (Debug.debug)
+            if (debug)
                 dbg_leave("method");
         }
     }
