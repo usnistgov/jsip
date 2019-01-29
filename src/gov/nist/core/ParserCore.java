@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 *
 */
 public abstract class ParserCore {
-    public static final boolean debug = Debug.parserDebug;
+    public static final boolean debug = Debug.debug;
 
     static AtomicInteger nesting_level =new AtomicInteger();
 

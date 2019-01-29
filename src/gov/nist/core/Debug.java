@@ -34,8 +34,7 @@ package gov.nist.core;
  */
 public class Debug {
 
-    public static  boolean debug = false;
-    public static  boolean parserDebug = false;
+    public static  boolean debug = false;    
     
     static StackLogger stackLogger;
     
@@ -44,18 +43,18 @@ public class Debug {
     }
 
     public static void println(String s) {
-        if ((parserDebug || debug )&& stackLogger != null )
+        if (debug && stackLogger != null )
             if ( stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 stackLogger.logDebug(s + "\n");
     }
     public static void printStackTrace(Exception ex) {
-        if ((parserDebug || debug ) && stackLogger != null) {
+        if (debug && stackLogger != null) {
             stackLogger.logError("Stack Trace",ex);
         }
     }
 
     public static void logError(String message, Exception ex) {
-      if ((parserDebug || debug) &&  stackLogger != null ) {
+      if (debug &&  stackLogger != null ) {
           if ( stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
               stackLogger.logError(message,ex);
       }

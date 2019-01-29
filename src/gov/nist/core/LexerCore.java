@@ -212,7 +212,7 @@ public class LexerCore extends StringTokenizer {
      * can be matched.
      */
     public Token match(int tok) throws ParseException {
-        if (Debug.parserDebug) {
+        if (Debug.debug) {
             Debug.println("match " + tok);
         }
         if (tok > START && tok < END) {
