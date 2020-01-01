@@ -134,12 +134,8 @@ public class StringTokenizer {
 
     public char lookAhead(int k) throws ParseException {
         // Debug.out.println("ptr = " + ptr);
-        try {
-            return buffer[ptr + k];
-        }
-        catch (IndexOutOfBoundsException e) {
-            return '\0';
-        }
+        int index = ptr + k;
+        return index < buffer.length ? buffer[index] : '\0';
     }
 
     public char getNextChar() throws ParseException {
