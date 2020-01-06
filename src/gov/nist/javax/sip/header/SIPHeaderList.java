@@ -502,9 +502,11 @@ public abstract class SIPHeaderList<HDR extends SIPHeader> extends SIPHeader imp
         while (true) {
             SIPHeader sipHeader = (SIPHeader) iterator.next();
             if ( sipHeader == this ) throw new RuntimeException ("Unexpected circularity in SipHeaderList");
+            
+            //This determines if a null body was added https://github.com/usnistgov/jsip/issues/53
             int buffPosDelta = buffer.length();
             sipHeader.encodeBody(buffer);
-            buffPosDelta -= buffer.length();
+            buffPosDelta -= buffer.length(); // if 0 nothing was added to the buffer
             // if (body.equals("")) System.out.println("BODY == ");
             if (iterator.hasNext()) {
             	if(buffPosDelta != 0) {
