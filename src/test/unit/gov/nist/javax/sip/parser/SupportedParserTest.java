@@ -24,6 +24,8 @@
  */
 package test.unit.gov.nist.javax.sip.parser;
 
+import gov.nist.javax.sip.header.Supported;
+import gov.nist.javax.sip.header.SupportedList;
 import gov.nist.javax.sip.parser.SupportedParser;
 
 /**
@@ -44,6 +46,20 @@ public class SupportedParserTest extends ParserTestCase {
 
         super.testParser(SupportedParser.class,content);
 
+    }
+    
+    /*
+     * Test for https://github.com/usnistgov/jsip/issues/53
+     * Adding two Supported headers, first one "" causes malformed encoding output:
+     * 
+     * "Support: ,timer"
+     */
+    public void testMalformedConstruction() {
+    	SupportedList supportedList = new SupportedList();
+    	supportedList.add(new Supported(""));
+    	supportedList.add(new Supported("timer"));
+    	String encoded = supportedList.encode();
+    	assertEquals("Supported: timer\r\n", encoded);
     }
 
 }
