@@ -68,7 +68,8 @@ public class URLParserTest extends TestCase {
           "sip:annc@10.10.30.186:6666;early=no;play=http://10.10.30.186:8080/examples/pin.vxml",
         "tel:+463-1701-4291" ,
         "tel:46317014291" ,
-        "http://10.10.30.186:8080/examples/pin.vxml"
+        "http://10.10.30.186:8080/examples/pin.vxml",
+        "http://10.10.30.186:8080/examples/%2B12125551212"
         };
 
 

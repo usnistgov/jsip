@@ -702,7 +702,7 @@ public class LexerCore extends StringTokenizer {
      * Do not consume the input.
      */
     public String charAsString(int nchars) {
-        return String.valueOf(buffer, ptr, nchars -1);
+        return String.valueOf(buffer, ptr, nchars);
     }
 
     /** Get and consume the next number.
