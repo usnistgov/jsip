@@ -51,7 +51,7 @@ public class Expires
 
     /** expires field
      */
-    protected int expires;
+    protected long expires;
 
     /** default constructor
      */
@@ -82,7 +82,7 @@ public class Expires
      *
      *
      */
-    public int getExpires() {
+    public long getExpires() {
         return expires;
     }
 
@@ -97,8 +97,8 @@ public class Expires
      *
      *
      */
-    public void setExpires(int expires) throws InvalidArgumentException {
-        if (expires < 0)
+    public void setExpires(long expires) throws InvalidArgumentException {
+        if (expires < 0 || expires > 4294967295L)
             throw new InvalidArgumentException("bad argument " + expires);
         this.expires = expires;
     }

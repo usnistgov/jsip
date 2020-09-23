@@ -51,7 +51,7 @@ public class MinExpires extends SIPHeader implements MinExpiresHeader {
     private static final long serialVersionUID = 7001828209606095801L;
     /** expires field
      */
-    protected int expires;
+    protected long expires;
 
     /** default constructor
      */
@@ -64,7 +64,7 @@ public class MinExpires extends SIPHeader implements MinExpiresHeader {
      * @return String
      */
     public StringBuilder encodeBody(StringBuilder retval) {
-        return retval.append(Integer.toString(expires));
+        return retval.append(Long.toString(expires));
     }
 
     /**
@@ -74,7 +74,7 @@ public class MinExpires extends SIPHeader implements MinExpiresHeader {
      * @return the expires value of the ExpiresHeader.
      *
      */
-    public int getExpires() {
+    public long getExpires() {
         return expires;
     }
 
@@ -90,8 +90,8 @@ public class MinExpires extends SIPHeader implements MinExpiresHeader {
      *
      *
      */
-    public void setExpires(int expires) throws InvalidArgumentException {
-        if (expires < 0)
+    public void setExpires(long expires) throws InvalidArgumentException {
+        if (expires < 0 || expires > 4294967295L)
             throw new InvalidArgumentException("bad argument " + expires);
         this.expires = expires;
     }

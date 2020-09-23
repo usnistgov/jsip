@@ -101,7 +101,7 @@ public interface ExpiresHeader extends Header {
      * @throws InvalidArgumentException if supplied value is less than zero.
      */
 
-    public void setExpires(int expires) throws InvalidArgumentException;
+    public void setExpires(long expires) throws InvalidArgumentException;
 
     /**
      * Gets the expires value of the ExpiresHeader. This expires value is
@@ -110,7 +110,7 @@ public interface ExpiresHeader extends Header {
      * @return the expires value of the ExpiresHeader.
      */
 
-    public int getExpires();
+    public long getExpires();
 
     /**
      * Name of ExpiresHeader
