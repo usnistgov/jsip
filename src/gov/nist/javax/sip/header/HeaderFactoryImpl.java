@@ -471,6 +471,19 @@ public class HeaderFactoryImpl implements HeaderFactory , HeaderFactoryExt {
 
         return e;
     }
+    
+    /**
+     * Creates a new ExpiresHeader based on the newly supplied expires value.
+     *
+     * @param expires - the new integer value of the expires.
+     * @throws InvalidArgumentException if supplied expires is less
+     * than zero.
+     * @return the newly created ExpiresHeader object.
+     */
+    public ExpiresHeader createExpiresHeader(int expires)
+        throws InvalidArgumentException {
+        return createExpiresHeader((long) expires);
+    }
 
     /**
      * Creates a new ExtensionHeader based on the newly supplied name and
@@ -600,6 +613,20 @@ public class HeaderFactoryImpl implements HeaderFactory , HeaderFactoryExt {
         min.setExpires(minExpires);
 
         return min;
+    }
+    
+    /**
+     * Creates a new MinExpiresHeader based on the newly supplied minExpires value.
+     *
+     * @param minExpires - the new integer value of the minExpires.
+     * @throws InvalidArgumentException if supplied minExpires is less
+     * than zero.
+     * @return the newly created MinExpiresHeader object.
+     * @since v1.1
+     */
+    public MinExpiresHeader createMinExpiresHeader(int minExpires)
+        throws InvalidArgumentException {
+        return createMinExpiresHeader((long) minExpires);
     }
 
     /**

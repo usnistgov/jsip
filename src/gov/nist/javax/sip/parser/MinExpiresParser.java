@@ -75,7 +75,7 @@ public class MinExpiresParser extends HeaderParser {
 
             String number = this.lexer.number();
             try {
-                Long delta = Long.parseLong(number);
+                long delta = Long.parseLong(number);
                 if (delta > 4294967295L) {
                     throw createParseException("bad integer format");
                 }

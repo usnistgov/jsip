@@ -307,7 +307,7 @@ public interface HeaderFactory {
      * than zero.
      * @return the newly created ExpiresHeader object.
      */
-    public ExpiresHeader createExpiresHeader(long expires)
+    public ExpiresHeader createExpiresHeader(int expires)
                                     throws InvalidArgumentException;
 
     /**
@@ -398,7 +398,7 @@ public interface HeaderFactory {
      * than zero.
      * @return the newly created MinExpiresHeader object.
      */
-    public MinExpiresHeader createMinExpiresHeader(long minExpires)
+    public MinExpiresHeader createMinExpiresHeader(int minExpires)
                               throws InvalidArgumentException;
 
 
