@@ -51,7 +51,7 @@ public class MinExpires extends SIPHeader implements MinExpiresHeader {
     private static final long serialVersionUID = 7001828209606095801L;
     /** expires field
      */
-    protected int expires;
+    protected long expires;
 
     /** default constructor
      */
@@ -64,7 +64,7 @@ public class MinExpires extends SIPHeader implements MinExpiresHeader {
      * @return String
      */
     public StringBuilder encodeBody(StringBuilder retval) {
-        return retval.append(Integer.toString(expires));
+        return retval.append(Long.toString(expires));
     }
 
     /**
@@ -74,19 +74,51 @@ public class MinExpires extends SIPHeader implements MinExpiresHeader {
      * @return the expires value of the ExpiresHeader.
      *
      */
-    public int getExpires() {
+    public long getExpiresLong() {
         return expires;
+    }
+    
+    /**
+     * Gets the expires value of the ExpiresHeader as type int. This expires value is relative time.
+     * Values larger than Integer.MAX_VALUE will be returned as Integer.MAX_VALUE.
+     * @return the expires value of the ExpiresHeader.
+     */
+    public int getExpires() {
+        int ret;
+        if (expires > Integer.MAX_VALUE) {
+            ret = Integer.MAX_VALUE;
+        } else {
+            ret = (int) expires;
+        }
+        return ret;
     }
 
     /**
      * Sets the relative expires value of the ExpiresHeader.
-     * The expires value MUST be greater than zero and MUST be
-     * less than 2**31.
+     * The expires value MUST be greater or equal than zero and MUST be
+     * less than 2**32.
      *
      * @param expires - the new expires value of this ExpiresHeader
      *
      * @throws InvalidArgumentException if supplied value is less than zero.
      *
+     *
+     *
+     */
+    public void setExpires(long expires) throws InvalidArgumentException {
+        if (expires < 0 || expires > 4294967295L)
+            throw new InvalidArgumentException("bad argument " + expires);
+        this.expires = expires;
+    }
+    
+    /**
+     * Sets the relative expires value of the ExpiresHeader.
+     * The expires value MUST be greater or equal than zero and MUST be
+     * less than 2**31.
+     *
+     * @param expires - the new expires value of this ExpiresHeader
+     *
+     * @throws InvalidArgumentException if supplied value is less than zero.
      *
      *
      */

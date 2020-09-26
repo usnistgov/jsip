@@ -1368,7 +1368,7 @@ public class SIPServerTransactionImpl extends SIPTransactionImpl implements SIPS
                  * is defined by the event package being used.
                  */
                 if (requestExpires != null
-                        && responseExpires.getExpires() > requestExpires.getExpires()) {
+                        && responseExpires.getExpiresLong() > requestExpires.getExpiresLong()) {
                     throw new SipException(
                             "Response Expires time exceeds request Expires time : See RFC 3265 3.1.1");
                 }

@@ -1044,11 +1044,11 @@ public class SIPClientTransactionImpl extends SIPTransactionImpl implements SIPC
       }
       this.isMapped = true;
       // Time extracted from the Expires header.
-      int expiresTime = -1;
+      long expiresTime = -1;
 
       if (sipRequest.getHeader(ExpiresHeader.NAME) != null) {
         Expires expires = (Expires) sipRequest.getHeader(ExpiresHeader.NAME);
-        expiresTime = expires.getExpires();
+        expiresTime = expires.getExpiresLong();
       }
       // This is a User Agent. The user has specified an Expires time. Start a timer
       // which will check if the tx is terminated by that time.

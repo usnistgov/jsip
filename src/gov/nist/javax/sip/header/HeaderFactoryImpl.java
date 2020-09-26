@@ -462,14 +462,27 @@ public class HeaderFactoryImpl implements HeaderFactory , HeaderFactoryExt {
      * than zero.
      * @return the newly created ExpiresHeader object.
      */
-    public ExpiresHeader createExpiresHeader(int expires)
+    public ExpiresHeader createExpiresHeader(long expires)
         throws InvalidArgumentException {
-        if (expires < 0)
+        if (expires < 0 || expires > 4294967295L)
             throw new InvalidArgumentException("bad value " + expires);
         Expires e = new Expires();
         e.setExpires(expires);
 
         return e;
+    }
+    
+    /**
+     * Creates a new ExpiresHeader based on the newly supplied expires value.
+     *
+     * @param expires - the new integer value of the expires.
+     * @throws InvalidArgumentException if supplied expires is less
+     * than zero.
+     * @return the newly created ExpiresHeader object.
+     */
+    public ExpiresHeader createExpiresHeader(int expires)
+        throws InvalidArgumentException {
+        return createExpiresHeader((long) expires);
     }
 
     /**
@@ -592,14 +605,28 @@ public class HeaderFactoryImpl implements HeaderFactory , HeaderFactoryExt {
      * @return the newly created MinExpiresHeader object.
      * @since v1.1
      */
-    public MinExpiresHeader createMinExpiresHeader(int minExpires)
+    public MinExpiresHeader createMinExpiresHeader(long minExpires)
         throws InvalidArgumentException {
-        if (minExpires < 0)
+        if (minExpires < 0 || minExpires > 4294967295L)
             throw new InvalidArgumentException("bad minExpires " + minExpires);
         MinExpires min = new MinExpires();
         min.setExpires(minExpires);
 
         return min;
+    }
+    
+    /**
+     * Creates a new MinExpiresHeader based on the newly supplied minExpires value.
+     *
+     * @param minExpires - the new integer value of the minExpires.
+     * @throws InvalidArgumentException if supplied minExpires is less
+     * than zero.
+     * @return the newly created MinExpiresHeader object.
+     * @since v1.1
+     */
+    public MinExpiresHeader createMinExpiresHeader(int minExpires)
+        throws InvalidArgumentException {
+        return createMinExpiresHeader((long) minExpires);
     }
 
     /**

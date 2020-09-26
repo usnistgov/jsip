@@ -71,7 +71,10 @@ public class ExpiresParser extends HeaderParser {
             lexer.SPorHT();
             String nextId = lexer.getNextId();
             try {
-                int delta = Integer.parseInt(nextId);
+                long delta = Long.parseLong(nextId);
+                if (delta > 4294967295L) {
+                    throw createParseException("bad integer format");
+                }
                 expires.setExpires(delta);
                 this.lexer.match('\n');
                 return expires;
