@@ -196,6 +196,7 @@ public class SIPServerTransactionImpl extends SIPTransactionImpl implements SIPS
     private String pendingReliableResponseMethod;
     private long pendingReliableCSeqNumber;
     private long pendingReliableRSeqNumber;
+    private ContentTypeHeader pendingReliableResponseContentType;
 
     // The pending reliable Response Timer
     private ProvisionalResponseTask provisionalResponseTask;
@@ -1395,7 +1396,7 @@ public class SIPServerTransactionImpl extends SIPTransactionImpl implements SIPS
              * responses contained a session description. In that case, it MUST NOT send a final
              * response until those provisional responses are acknowledged.
              */
-            final ContentTypeHeader contentTypeHeader = ((SIPResponse)response).getContentTypeHeader();
+            final ContentTypeHeader contentTypeHeader = this.pendingReliableResponseContentType;
             if (this.pendingReliableResponseAsBytes != null
                     && this.getDialog() != null
                     && this.getInternalState() != TransactionState._TERMINATED
@@ -1725,6 +1726,7 @@ public class SIPServerTransactionImpl extends SIPTransactionImpl implements SIPS
             this.pendingReliableResponseAsBytes = reliableResponse.encodeAsBytes(this.getTransport());
             this.pendingReliableResponseMethod = reliableResponse.getCSeq().getMethod();
             this.pendingReliableCSeqNumber = reliableResponse.getCSeq().getSeqNumber();
+            this.pendingReliableResponseContentType = reliableResponse.getContentTypeHeader();
         }
         /*
          * In addition, it MUST contain a Require header field containing the option tag 100rel,
@@ -1788,6 +1790,7 @@ public class SIPServerTransactionImpl extends SIPTransactionImpl implements SIPS
            }
 
         this.pendingReliableResponseAsBytes = null;
+        this.pendingReliableResponseContentType = null;
         if ( interlockProvisionalResponses && getDialog() != null )  {
             this.provisionalResponseSem.release();
         }
@@ -2058,6 +2061,7 @@ public class SIPServerTransactionImpl extends SIPTransactionImpl implements SIPS
                 lastResponse = null;
             }
             pendingReliableResponseAsBytes = null;
+            pendingReliableResponseContentType = null;
             pendingReliableResponseMethod = null;
             pendingSubscribeTransaction = null;
             provisionalResponseSem = null;
