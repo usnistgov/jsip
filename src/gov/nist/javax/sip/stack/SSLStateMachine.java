@@ -341,6 +341,9 @@ public class SSLStateMachine {
 					}
 					continue;
 				}
+				if(result.getStatus().equals(Status.CLOSED)) {
+					break;
+				}
 				if(result.bytesProduced()>0) {
 					// There is actual application data in this chunk
 					dst.flip();
