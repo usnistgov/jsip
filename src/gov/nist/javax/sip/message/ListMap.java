@@ -82,6 +82,8 @@ import gov.nist.javax.sip.header.WWWAuthenticate;
 import gov.nist.javax.sip.header.WWWAuthenticateList;
 import gov.nist.javax.sip.header.Warning;
 import gov.nist.javax.sip.header.WarningList;
+import gov.nist.javax.sip.header.ims.PAccessNetworkInfo;
+import gov.nist.javax.sip.header.ims.PAccessNetworkInfoList;
 import gov.nist.javax.sip.header.ims.PAssertedIdentity;
 import gov.nist.javax.sip.header.ims.PAssertedIdentityList;
 import gov.nist.javax.sip.header.ims.PAssociatedURI;
@@ -208,6 +210,8 @@ public class ListMap {
         
         // https://java.net/jira/browse/JSIP-460
         headerListTable.put(Reason.class, ReasonList.class);
+        
+        headerListTable.put(PAccessNetworkInfo.class, PAccessNetworkInfoList.class);
 
         initialized = true;
 

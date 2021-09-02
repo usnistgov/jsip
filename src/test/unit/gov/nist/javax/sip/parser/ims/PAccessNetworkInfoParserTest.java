@@ -48,6 +48,20 @@ public class PAccessNetworkInfoParserTest extends ParserTestCase
         };
 
         super.testParser(PAccessNetworkInfoParser.class,accessNetworkInfo);
+        
+        //test one more
+        String[] accessNetworkInfo_2 =  {
+                "P-Access-Network-Info: IEEE-802.11\n",
+                "P-Access-Network-Info: IEEE-802.11, 3GPP-UTRAN-TDD; utran-cell-id-3gpp=23456789ABCDE\n",
+                "P-Access-Network-Info: IEEE-802.11, 3GPP-UTRAN-TDD; utran-cell-id-3gpp=23456789ABCDE, 3GPP-UTRAN-TDD; utran-cell-id-3gpp=23456789ABCDF\n",
+                "P-Access-Network-Info: 3GPP-E-UTRAN; utran-cell-id-3gpp=262010063F423802;network-provided,3GPP-E-UTRAN-FDD; utran-cell-id-3gpp=262010063F423802\n",
+                "P-Access-Network-Info: IEEE-802.11;i-wlan-node-id=74da38582ba4\n",
+                "P-Access-Network-Info: 3GPP-E-UTRAN-FDD;utran-cell-id-3gpp=262010063f423802\n",
+                "P-Access-Network-Info: 3GPP-E-UTRAN;utran-cell-id-3gpp=\"262010063F423802\";network-provided,3GPP-E-UTRAN-FDD;utran-cell-id-3gpp=262010063f423802\n"
+        };
+        super.testParser(PAccessNetworkInfoParser.class,accessNetworkInfo_2);
+        
+
     }
 
 }
