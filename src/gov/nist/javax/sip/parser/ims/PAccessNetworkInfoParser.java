@@ -33,6 +33,7 @@ package gov.nist.javax.sip.parser.ims;
 import java.text.ParseException;
 
 import gov.nist.javax.sip.header.ims.PAccessNetworkInfo;
+import gov.nist.javax.sip.header.ims.PAccessNetworkInfoList;
 import gov.nist.javax.sip.header.ims.SIPHeaderNamesIms;
 import gov.nist.core.Token;
 import gov.nist.core.NameValue;
@@ -100,56 +101,60 @@ public class PAccessNetworkInfoParser
     }
 
 
-    public SIPHeader parse() throws ParseException
-    {
+	public SIPHeader parse() throws ParseException {
+		if (debug)
+			dbg_enter("AccessNetworkInfoParser.parse");
+		PAccessNetworkInfoList accessNetworkInfoList = new PAccessNetworkInfoList();
 
-        if (debug)
-            dbg_enter("AccessNetworkInfoParser.parse");
-        try {
-            headerName(TokenTypes.P_ACCESS_NETWORK_INFO);
-            PAccessNetworkInfo accessNetworkInfo = new PAccessNetworkInfo();
-            accessNetworkInfo.setHeaderName(SIPHeaderNamesIms.P_ACCESS_NETWORK_INFO);
+		try {
+			headerName(TokenTypes.P_ACCESS_NETWORK_INFO);
+			while (true) {
+				PAccessNetworkInfo accessNetworkInfo = new PAccessNetworkInfo();
+				accessNetworkInfo.setHeaderName(SIPHeaderNamesIms.P_ACCESS_NETWORK_INFO);
 
-            this.lexer.SPorHT();
-            lexer.match(TokenTypes.ID);
-            Token token = lexer.getNextToken();
-            accessNetworkInfo.setAccessType(token.getTokenValue());
+				this.lexer.SPorHT();
+				lexer.match(TokenTypes.ID);
+				Token token = lexer.getNextToken();
+				accessNetworkInfo.setAccessType(token.getTokenValue());
 
-            this.lexer.SPorHT();
-            while (lexer.lookAhead(0) == ';') {
-                this.lexer.match(';');
-                this.lexer.SPorHT();
+				this.lexer.SPorHT();
+				while (lexer.lookAhead(0) == ';') {
+					this.lexer.match(';');
+					this.lexer.SPorHT();
+					try {
+						NameValue nv = super.nameValue('=');
+						accessNetworkInfo.setParameter(nv);
+					} catch (ParseException e) {
+						this.lexer.SPorHT();
+						String ext = this.lexer.quotedString();
+						if (ext == null) {
+							ext = this.lexer.ttokenGenValue();
+						} else {
+							// avoids tokens such as "a=b" to be stripped of quotes and misinterpretend as
+							// RFC 7913 generic-param when re-encoded
+							ext = "\"" + ext + "\"";
+						}
+						accessNetworkInfo.setExtensionAccessInfo(ext);
+					}
+					this.lexer.SPorHT();
+				}
+				accessNetworkInfoList.add(accessNetworkInfo);
+				this.lexer.SPorHT();
+				char la = lexer.lookAhead(0);
+				if (la == ',') {
+					this.lexer.match(',');
+					this.lexer.SPorHT();
+				} else if (la == '\n')
+					break;
+				else
+					throw createParseException("unexpected char");
+			}
 
-                try {
-                	NameValue nv = super.nameValue('=');
-                	accessNetworkInfo.setParameter(nv);
-                } catch (ParseException e) {
-                	this.lexer.SPorHT();
-                	String ext = this.lexer.quotedString();
-                	if(ext == null) {
-                		ext = this.lexer.ttokenGenValue();
-                	} else {
-                		// avoids tokens such as "a=b" to be stripped of quotes and misinterpretend as
-                		// RFC 7913 generic-param when re-encoded
-                		ext = "\"" + ext + "\""; 
-                	}
-                	accessNetworkInfo.setExtensionAccessInfo(ext);
-                }
-                this.lexer.SPorHT();
-            }
-            this.lexer.SPorHT();
-            this.lexer.match('\n');
-
-
-            return accessNetworkInfo;
-        } finally {
-            if (debug)
-                dbg_leave("AccessNetworkInfoParser.parse");
-        }
-
-    }
-
-
-
+			return accessNetworkInfoList;
+		} finally {
+			if (debug)
+				dbg_leave("AccessNetworkInfoParser.parse");
+		}
+	}
 
 }
