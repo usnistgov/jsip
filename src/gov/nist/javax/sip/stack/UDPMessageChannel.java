@@ -301,8 +301,7 @@ public class UDPMessageChannel extends MessageChannel implements
 	                	continue;
 	                } else {
 	                	packet = work.packet;
-		                this.incomingPacket = work.packet;						
-	                }	                	
+	                }
                 } catch (InterruptedException ex) {
 					if (!udpMessageProcessor.isRunning) {
 						return;
@@ -320,7 +319,7 @@ public class UDPMessageChannel extends MessageChannel implements
                 logger.logError(
                         "Error while processing incoming UDP packet" + Arrays.toString(packet.getData()), e);
             }
-
+            this.incomingPacket = null;
             if (sipStack.threadPoolSize == -1) {
                 return;
             }
