@@ -76,6 +76,9 @@ import gov.nist.javax.sip.parser.TokenTypes;
  *                                utran-sai-3gpp / extension-access-info
  *       np                     = "network-provided"
  *       extension-access-info  = generic-param
+ *  <p>As per RFC 3261 </p>
+ *      generic-param  =  token [ EQUAL gen-value ]
+ *      gen-value      =  token / host / quoted-string
  * </pre>
  * 
  *
@@ -122,7 +125,7 @@ public class PAccessNetworkInfoParser
 					this.lexer.match(';');
 					this.lexer.SPorHT();
 					try {
-						NameValue nv = super.nameValue('=');
+						NameValue nv = super.genericNameValue('=');
 						accessNetworkInfo.setParameter(nv);
 					} catch (ParseException e) {
 						this.lexer.SPorHT();

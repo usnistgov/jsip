@@ -97,6 +97,76 @@ public abstract class ParserCore {
 
 
     }
+    
+    
+    // matches generic-param = token [ EQUAL gen-value ]
+    // gen-value = token / host / quoted-string
+    // see RFC 3261
+    // This is a updated version of #nameValue() to incorporate IPV6 Address
+    protected NameValue genericNameValue(char separator) throws ParseException {
+        if (debug)
+            dbg_enter("genericNameValue");
+        try {
+
+            lexer.match(LexerCore.ID);
+            Token name = lexer.getNextToken();
+            // eat white space.
+            lexer.SPorHT();
+            try {
+
+                boolean quoted = false;
+
+                char la = lexer.lookAhead(0);
+
+                if (la == separator) {
+                    lexer.consume(1);
+                    lexer.SPorHT();
+                    String str = null;
+                    boolean isFlag = false;
+                    char c = lexer.lookAhead(0);
+                    if (c == '\"') {
+                        str = lexer.quotedString();
+                        quoted = true;
+                    } else if (c == '[') {
+                        lexer.match(LexerCore.IPV6);
+                        Token value = lexer.getNextToken();
+                        str = value.tokenValue;
+
+                        // JvB: flag parameters must be empty string!
+                        if (str == null) {
+                            str = "";
+                            isFlag = true;
+                        }
+                    } else {
+                        lexer.match(LexerCore.ID);
+                        Token value = lexer.getNextToken();
+                        str = value.tokenValue;
+
+                        // JvB: flag parameters must be empty string!
+                        if (str == null) {
+                            str = "";
+                            isFlag = true;
+                        }
+                    }
+                    NameValue nv = new NameValue(name.tokenValue, str, isFlag);
+                    if (quoted)
+                        nv.setQuotedValue();
+                    return nv;
+                } else {
+                    // JvB: flag parameters must be empty string!
+                    return new NameValue(name.tokenValue, "", true);
+                }
+            } catch (ParseException ex) {
+                return new NameValue(name.tokenValue, null, false);
+            }
+
+        } finally {
+            if (debug)
+                dbg_leave("genericNameValue");
+        }
+
+    }
+
 
     protected  void dbg_enter(String rule) {
         StringBuilder stringBuilder = new StringBuilder();
