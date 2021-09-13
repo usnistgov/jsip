@@ -60,8 +60,38 @@ public class PAccessNetworkInfoParserTest extends ParserTestCase
                 "P-Access-Network-Info: 3GPP-E-UTRAN;utran-cell-id-3gpp=\"262010063F423802\";network-provided,3GPP-E-UTRAN-FDD;utran-cell-id-3gpp=262010063f423802\n"
         };
         super.testParser(PAccessNetworkInfoParser.class,accessNetworkInfo_2);
-        
+        String token = "A1-.%*_+`'~";
+        String[] accessNetworkInfo_3 =  {
+                "P-Access-Network-Info: IEEE-802.11; network-provided\n",
+                 "P-Access-Network-Info: IEEE-802.11; ipv4=[2345:3456::]\n",
+                 //token
+                 "P-Access-Network-Info: "+token+"\n",
+                 //hostname
+                "P-Access-Network-Info: IEEE-802.11;AaB123=www.example-test.example.com\n",
+                "P-Access-Network-Info: IEEE-802.11;AaB123=www.example-test.example.com.\n",
+                //IPv4address 
+                "P-Access-Network-Info: IEEE-802.11;AaB123=1.1.1.1\n",
+                "P-Access-Network-Info: IEEE-802.11;AaB123=0.0.0.0\n",
+                //IPv6reference
+                "P-Access-Network-Info: IEEE-802.11;AaB123=[::]\n",
+                "P-Access-Network-Info: IEEE-802.11;AaB123=[88A]\n",
+                "P-Access-Network-Info: IEEE-802.11;AaB123=[88A::]\n",
+                "P-Access-Network-Info: IEEE-802.11;AaB123=[88A::99B]\n",
+                "P-Access-Network-Info: IEEE-802.11;AaB123=[88A:99B::]\n",
+                "P-Access-Network-Info: IEEE-802.11;AaB123=[88A:99B::11C]\n",
+                "P-Access-Network-Info: IEEE-802.11;AaB123=[88A:99B::11C:22D]\n",
+                "P-Access-Network-Info: IEEE-802.11;AaB123=[::11C]\n",
+                "P-Access-Network-Info: IEEE-802.11;AaB123=[11C::22D]\n",
+                //hexpart [ ":" IPv4address ]
+                "P-Access-Network-Info: IEEE-802.11;AaB123=[11C::12.04.02.99]\n",
+                //IPv6reference quoted
+                "P-Access-Network-Info: IEEE-802.11;AaB123=\"[11C::12.04.02.99]\"\n",
+                //Multiple IP6
+                "P-Access-Network-Info: IEEE-802.11;AaB123=[88A:99B::11C:22D];cc231=[11C::12.04.02.99]\n",
+        };
+        super.testParser(PAccessNetworkInfoParser.class,accessNetworkInfo_3);
 
     }
+
 
 }
