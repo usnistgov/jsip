@@ -6,8 +6,8 @@ target
 classes
 *.zip
 # ignore eclipse files
-#.project
-#.classpath
+.project
+.classpath
 .settings
 .metadata
 # ignore IDEA files
@@ -44,3 +44,6 @@ hs_err_pid*.log
 PutObjectStoreDirHere
 # ignore mvn-rpmbuild repo
 /.m2
+# ignore vs-code settings files
+.vscode/settings.json
+jsip/.vscode/settings.json
