@@ -10,3 +10,4 @@ Notes for the next version:
    
 Note that all the Extension classes (ending with Ext ) can be used as they will be included 
 in the next JAIN-SIP API.
+
