@@ -1,13 +1,9 @@
 package gov.nist.javax.sip.stack.acktransport;
 
 
-import gov.nist.javax.sip.SipStackImpl;
-import gov.nist.javax.sip.address.SipUri;
-
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Properties;
 
 import javax.sip.ClientTransaction;
 import javax.sip.DialogTerminatedEvent;
@@ -16,8 +12,6 @@ import javax.sip.ListeningPoint;
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
 import javax.sip.ServerTransaction;
-import javax.sip.SipException;
-import javax.sip.SipFactory;
 import javax.sip.SipListener;
 import javax.sip.SipProvider;
 import javax.sip.SipStack;
@@ -35,14 +29,11 @@ import javax.sip.message.MessageFactory;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
-import junit.framework.TestCase;
-
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 
-import test.tck.TestHarness;
-import test.tck.msgflow.callflows.ProtocolObjects;
+import junit.framework.TestCase;
 
 /**
  * A very simple forking proxy server.
