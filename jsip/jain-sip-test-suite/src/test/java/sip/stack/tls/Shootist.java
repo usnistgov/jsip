@@ -1,20 +1,48 @@
-package examples.tls;
+package sip.stack.tls;
 import gov.nist.javax.sip.ClientTransactionExt;
 import gov.nist.javax.sip.TlsSecurityPolicy;
+import gov.nist.javax.sip.header.HeaderExt;
 import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
-import gov.nist.javax.sip.stack.SIPTransaction;
+import gov.nist.javax.sip.stack.SIPTransactionStack;
+
+import java.security.cert.Certificate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
-import javax.sip.*;
-import javax.sip.address.*;
-import javax.sip.header.*;
-import javax.sip.message.*;
-
-import test.unit.gov.nist.javax.sip.stack.tls.TlsTest;
-
-import java.io.IOException;
-import java.security.cert.Certificate;
-import java.util.*;
+import javax.sip.ClientTransaction;
+import javax.sip.Dialog;
+import javax.sip.DialogTerminatedEvent;
+import javax.sip.IOExceptionEvent;
+import javax.sip.ListeningPoint;
+import javax.sip.PeerUnavailableException;
+import javax.sip.RequestEvent;
+import javax.sip.ResponseEvent;
+import javax.sip.ServerTransaction;
+import javax.sip.SipFactory;
+import javax.sip.SipListener;
+import javax.sip.SipProvider;
+import javax.sip.SipStack;
+import javax.sip.Transaction;
+import javax.sip.TransactionTerminatedEvent;
+import javax.sip.address.Address;
+import javax.sip.address.AddressFactory;
+import javax.sip.address.SipURI;
+import javax.sip.header.CSeqHeader;
+import javax.sip.header.CallIdHeader;
+import javax.sip.header.ContactHeader;
+import javax.sip.header.ContentTypeHeader;
+import javax.sip.header.FromHeader;
+import javax.sip.header.Header;
+import javax.sip.header.HeaderFactory;
+import javax.sip.header.MaxForwardsHeader;
+import javax.sip.header.RouteHeader;
+import javax.sip.header.ToHeader;
+import javax.sip.header.ViaHeader;
+import javax.sip.message.MessageFactory;
+import javax.sip.message.Request;
+import javax.sip.message.Response;
 
 
 
@@ -37,57 +65,18 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
     private ContactHeader contactHeader;
     private ListeningPoint tlsListeningPoint;
     private int counter;
+    private String domain;
 
     protected ClientTransaction inviteTid;
+	private boolean byeSeen;
+	private boolean enforceTlsPolicyCalled;
 
     protected static final String usageString =
         "java "
             + "examples.shootistTLS.Shootist \n"
             + ">>>> is your class path set to the root?";
 
-    private static void usage() {
-        System.out.println(usageString);
-        System.exit(0);
-
-    }
-    private void shutDown() {
-        try {
-                try {
-                Thread.sleep(2000);
-                 } catch (InterruptedException e) {
-                 }
-            System.out.println("nulling reference");
-            sipStack.deleteListeningPoint(tlsListeningPoint);
-            // This will close down the stack and exit all threads
-            tlsProvider.removeSipListener(this);
-            while (true) {
-              try {
-                  sipStack.deleteSipProvider(tlsProvider);
-                  break;
-                } catch (ObjectInUseException  ex)  {
-                    try {
-                    Thread.sleep(2000);
-                     } catch (InterruptedException e) {
-                    continue;
-                     }
-               }
-            }
-            sipStack = null;
-            tlsProvider = null;
-            this.inviteTid = null;
-            this.contactHeader = null;
-            addressFactory = null;
-            headerFactory = null;
-            messageFactory = null;
-            this.tlsListeningPoint = null;
-            this.reInviteCount = 0;
-            System.gc();
-            //Redo this from the start.
-           //  if (counter < 10 )
-           //     this.init();
-           //  else counter ++;
-        } catch (Exception ex) { ex.printStackTrace(); }
-    }
+  
 
 
     public void processRequest(RequestEvent requestReceivedEvent) {
@@ -126,11 +115,11 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
             System.out.println("shootist:  Sending OK.");
             System.out.println("Dialog State = " + dialog.getState());
 
-            this.shutDown();
+            this.byeSeen = true;
 
         } catch (Exception ex) {
             ex.printStackTrace();
-            System.exit(0);
+            TlsTest.fail("unepxected exception");
 
         }
     }
@@ -182,7 +171,7 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            System.exit(0);
+            TlsTest.fail("unexpected exception");
         }
 
     }
@@ -191,49 +180,63 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
         System.out.println("Transaction Time out" );
     }
 
-    public void init() {
+    
+    public void init(String domain) {
+        init(domain, null);
+    }
+    
+    public void init(String domain, Properties props) {
+    	this.domain = domain;
         SipFactory sipFactory = null;
         sipStack = null;
         sipFactory = SipFactory.getInstance();
         sipFactory.setPathName("gov.nist");
-        Properties properties = new Properties();
+       
         String transport = "tls";
         int port = 5061;
         String peerHostPort = "127.0.0.1:5071";
-        properties.setProperty(
-            "javax.sip.OUTBOUND_PROXY",
-            peerHostPort + "/" + transport);
-        // If you want to use UDP then uncomment this.
-        //properties.setProperty(
-        //  "javax.sip.ROUTER_PATH",
-        //  "examples.shootistTLS.MyRouter");
-        properties.setProperty("javax.sip.STACK_NAME", "shootist");
-   
-        // The following properties are specific to nist-sip
-        // and are not necessarily part of any other jain-sip
-        // implementation.
-        // You can set a max message size for tcp transport to
-        // guard against denial of service attack.
-        properties.setProperty("gov.nist.javax.sip.MAX_MESSAGE_SIZE",
-                    "1048576");
-        properties.setProperty(
-            "gov.nist.javax.sip.DEBUG_LOG",
-            "shootistdebug.txt");
-        properties.setProperty(
-            "gov.nist.javax.sip.SERVER_LOG",
-            "shootistlog.txt");
-
-        properties.setProperty("gov.nist.javax.sip.TLS_SECURITY_POLICY",
-                this.getClass().getName());
-//        properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
-
-        // Drop the client connection after we are done with the transaction.
-        properties.setProperty("gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS", "false");
-        // Set to 0 in your production code for max speed.
-        // You need  16 for logging traces. 32 for debug + traces.
-        // Your code will limp at 32 but it is best for debugging.
-        properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
-
+        Properties properties = new Properties(); 
+        if(props == null) {                   
+            properties.setProperty(
+                "javax.sip.OUTBOUND_PROXY",
+                peerHostPort + "/" + transport);
+            // If you want to use UDP then uncomment this.
+            //properties.setProperty(
+            //  "javax.sip.ROUTER_PATH",
+            //  "examples.shootistTLS.MyRouter");
+            properties.setProperty("javax.sip.STACK_NAME", "shootist");
+       
+            // The following properties are specific to nist-sip
+            // and are not necessarily part of any other jain-sip
+            // implementation.
+            // You can set a max message size for tcp transport to
+            // guard against denial of service attack.
+            properties.setProperty("gov.nist.javax.sip.MAX_MESSAGE_SIZE",
+                        "1048576");
+            properties.setProperty(
+                "gov.nist.javax.sip.DEBUG_LOG",
+                "logs/shootistdebug.txt");
+            properties.setProperty(
+                "gov.nist.javax.sip.SERVER_LOG",
+                "logs/shootistlog.txt");
+            properties.setProperty(
+                    "gov.nist.javax.sip.SSL_HANDSHAKE_TIMEOUT", "10000");
+            properties.setProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE", "20");
+            properties.setProperty("gov.nist.javax.sip.TLS_SECURITY_POLICY",
+                    this.getClass().getName());
+    
+            // Drop the client connection after we are done with the transaction.
+            properties.setProperty("gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS", "false");
+            // Set to 0 in your production code for max speed.
+            // You need  16 for logging traces. 32 for debug + traces.
+            // Your code will limp at 32 but it is best for debugging.
+            properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "LOG4J");
+            if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+            	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+            }
+        } else {
+            properties = props;
+        }
         try {
             // Create SipStack object
             sipStack = sipFactory.createSipStack(properties);
@@ -244,7 +247,7 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
             // in the classpath
             e.printStackTrace();
             System.err.println(e.getMessage());
-            System.exit(0);
+            TlsTest.fail("unexpected Exception");
         }
 
         try {
@@ -254,7 +257,7 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
             Shootist listener = this;
 
             tlsListeningPoint = sipStack.createListeningPoint
-                                ("127.0.0.1", port, "tls");
+                                ("127.0.0.1", port, transport);
             tlsProvider = sipStack.createSipProvider(tlsListeningPoint);
             tlsProvider.addSipListener(listener);
 
@@ -342,7 +345,7 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
             SipURI contactURI = addressFactory.createSipURI(fromName, host);
             //contactURI.setSecure( true );
             contactURI.setPort(port);
-            contactURI.setTransportParam("tls");
+            contactURI.setTransportParam(transport);
 
             Address contactAddress = addressFactory.createAddress(contactURI);
 
@@ -355,7 +358,7 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
 
             // Add the extension header.
             Header extensionHeader =
-                headerFactory.createHeader("My-Header", "my header value");
+                headerFactory.createHeader("Certificate-Check", domain);
             request.addHeader(extensionHeader);
 
             String sdpData =
@@ -371,6 +374,12 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
                     + "a=rtpmap:4 G723/8000\r\n"
                     + "a=rtpmap:18 G729A/8000\r\n"
                     + "a=ptime:20\r\n";
+            
+            // Make large body to force TLS fragmentation
+            for(int q=0;q<7;q++) {
+            	sdpData += sdpData;
+            }
+            
             byte[]  contents = sdpData.getBytes();
             //byte[]  contents = sdpBuff.toString().getBytes();
 
@@ -384,8 +393,8 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
             
             SipURI routeUri = (SipURI) requestURI.clone();
             routeUri.setLrParam();
-            routeUri.setTransportParam("tls");
-            Address peerAddress = addressFactory.createAddress(requestURI);
+            routeUri.setTransportParam(transport);
+            Address peerAddress = addressFactory.createAddress(routeUri);
            
             
             RouteHeader routeHeader = headerFactory.createRouteHeader(peerAddress);
@@ -395,24 +404,34 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
             // Create the client transaction.
             listener.inviteTid = sipProvider.getNewClientTransaction(request);
 
+            Thread.sleep(100);
             // send the request out.
             listener.inviteTid.sendRequest();
             
+            System.out.println("isSecure = " + ((ClientTransactionExt)listener.inviteTid).isSecure());
+            if(!((SIPTransactionStack)sipStack).getMessageProcessorFactory().getClass().getName().equals(NioMessageProcessorFactory.class.getName())) {
+                if ( ((ClientTransactionExt)listener.inviteTid).isSecure() ) {
+                    System.out.println("cipherSuite = " + ((ClientTransactionExt)listener.inviteTid).getCipherSuite());
+                    if(((ClientTransactionExt)listener.inviteTid).getLocalCertificates() != null) {
+    	                for ( Certificate cert : ((ClientTransactionExt)listener.inviteTid).getLocalCertificates()) {
+    	                    System.out.println("localCert =" + cert);
+    	                }
+                    }
+                    if(((ClientTransactionExt)listener.inviteTid).getPeerCertificates() != null) {
+    	                for ( Certificate cert : ((ClientTransactionExt)listener.inviteTid).getPeerCertificates()) {
+    	                    System.out.println("remoteCerts = " + cert);
+    	                }
+                    }
+                }
+            }
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             ex.printStackTrace();
-            usage();
+            TlsTest.fail("unexpected exception ");
         }
     }
 
-    public static void main(String args[]) {
-    	//System.setProperty( "javax.net.ssl.keyStore",  TlsTest.class.getResource("testkeys").getPath() );
-        //System.setProperty( "javax.net.ssl.trustStore", TlsTest.class.getResource("testkeys").getPath() );
-        System.setProperty( "javax.net.ssl.keyStorePassword", "passphrase" );
-        System.setProperty( "javax.net.ssl.keyStoreType", "jks" );
-        new Shootist().init();
-
-    }
+  
 
     public void processIOException(IOExceptionEvent exceptionEvent) {
         System.out.println("IOException occured while retransmitting requests:" + exceptionEvent);
@@ -428,12 +447,14 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
 
     public void enforceTlsPolicy(ClientTransactionExt transaction) throws SecurityException {
         System.out.println("enforceTlsPolicy");
-        List<String> certIdentities = null;
-        try {
-            certIdentities = transaction.extractCertIdentities();
-        } catch (SSLPeerUnverifiedException e) {
-        }
-        if ((certIdentities == null) || certIdentities.isEmpty()) {
+        this.enforceTlsPolicyCalled = true;
+        List<String> certIdentities;
+		try {
+			certIdentities = transaction.extractCertIdentities();
+		} catch (SSLPeerUnverifiedException e) {
+			throw new SecurityException(e);
+		}
+        if (certIdentities.isEmpty()) {
             System.out.println("Could not find any identities in the TLS certificate");
         }
         else {
@@ -443,36 +464,43 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
         // the destination IP address should match one of the certIdentities
         boolean foundPeerIdentity = false;
         String expectedIpAddress = ((SipURI)transaction.getRequest().getRequestURI()).getHost();
+        String certificateDomain = ((HeaderExt)transaction.getRequest().getHeader("Certificate-Check")).getValue();
         for (String identity : certIdentities) {
+        	 System.out.println("identity " + identity);
             // identities must be resolved to dotted quads before comparing: this is faked here
-            String peerIpAddress = "10.10.10.0";
-            if (identity.equals("localhost")) {
-                peerIpAddress = "127.0.0.1";
-            }
-            if (expectedIpAddress.equals(peerIpAddress)) {
+//            String peerIpAddress = "10.10.10.0";
+//            if (identity.equals("localhost")) {
+//                peerIpAddress = "127.0.0.1";
+//            } else 
+            if (identity.equalsIgnoreCase(certificateDomain)) {
+//                peerIpAddress = domain;
                 foundPeerIdentity = true;
             }
+//            if (expectedIpAddress.equals(peerIpAddress)) {
+//                foundPeerIdentity = true;
+//            }
         }
         if (!foundPeerIdentity) {
-            throw new SecurityException("Certificate identity does not match requested domain");
-        }
-        System.out.println("isSecure = " + transaction.isSecure());
-        if (transaction.isSecure() ) {
-            System.out.println("cipherSuite = " + transaction.getCipherSuite());
-            if(transaction.getLocalCertificates() != null) {
-                for ( Certificate cert : transaction.getLocalCertificates()) {
-                    System.out.println("localCert =" + cert);
-                }
-            }
-            try {
-	            if(transaction.getPeerCertificates() != null) {
-	                for ( Certificate cert : transaction.getPeerCertificates()) {
-	                    System.out.println("remoteCerts = " + cert);
-	                }
-	            }
-            } catch (SSLPeerUnverifiedException e) {
-            	throw new SecurityException("problem with peers", e);
-            }
+            throw new SecurityException("Certificate identity does not match requested domain " + certificateDomain);
         }
     }
+    
+    public void checkState() {
+    	TlsTest.assertTrue("enforceTlsPolicy should be called ", this.enforceTlsPolicyCalled);
+    }
+    
+	public void stop() {
+		this.sipStack.stop();
+	}
+	
+	public static void main(String args[]) throws Exception {
+		// setup TLS properties
+        System.setProperty( "javax.net.ssl.keyStore",  TlsTest.class.getResource("testkeys").getPath() );
+        System.setProperty( "javax.net.ssl.trustStore", TlsTest.class.getResource("testkeys").getPath() );
+        System.setProperty( "javax.net.ssl.keyStorePassword", "passphrase" );
+        System.setProperty( "javax.net.ssl.keyStoreType", "jks" );
+        Shootist shootist = new Shootist();
+        shootist.init("localhost");
+	}
+	
 }

@@ -9,9 +9,7 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<groupId>javax.sip</groupId>
 	<artifactId>jain-sip-ri-13</artifactId>
-	<version>1.3.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>jain-sip-ri-13</name>

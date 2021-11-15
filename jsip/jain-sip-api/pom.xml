@@ -11,6 +11,7 @@
 
 	<artifactId>jain-sip-api-13</artifactId>
 	<packaging>jar</packaging>
+	
 	<name>jain-sip-api-13</name>
 	<url>http://code.google.com/p/jain-sip/</url>
 	<build>
