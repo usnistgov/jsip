@@ -23,7 +23,7 @@
  * Tag names and attributes.
  */
 
-package test.torture;
+package torture;
 
 public interface TagNames
 {

@@ -10,40 +10,54 @@ classes
 .classpath
 .settings
 .metadata
+
 # ignore IDEA files
 *.iml
 *.ipr
 *.iws
 .idea
+
 # ignore NetBeans files
 nbactions.xml
 nb-configuration.xml
 catalog.xml
+
 #
 maven-ant-tasks.jar
 test-output
 transaction.log
+
 # vim files
 *.swp
 /.gitk-tmp.*
 atlassian-ide-plugin.xml
+
 # temp files
 *~
+
 # maven versions plugin
 pom.xml.versionsBackup
+
 # hprof dumps
 /*.hprof
+
 # ignore 'randomly' strewn around logs
 server.log
 *.log
+
 # ignore java crashes
 hs_err_pid*.log
+
 # H2 databases produced by tests
 *.h2.db
+
 # JBoss transaction generated files
 PutObjectStoreDirHere
+
 # ignore mvn-rpmbuild repo
 /.m2
+
 # ignore vs-code settings files
-.vscode/settings.json
-jsip/.vscode/settings.json
+.vscode
+.project
+.classpath

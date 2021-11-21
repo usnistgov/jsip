@@ -1,4 +1,4 @@
-package test.load.subsnotify;
+package load.subsnotify;
 
 import javax.sip.*;
 import javax.sip.address.*;

@@ -1,5 +1,5 @@
 
-package test.load.concurrency;
+package load.concurrency;
 
 import java.util.Properties;
 import javax.sip.SipException;

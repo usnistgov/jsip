@@ -28,7 +28,7 @@
  *
  */
 
-package test.torture;
+package torture;
 
 import gov.nist.javax.sip.address.*;
 import gov.nist.javax.sip.parser.*;

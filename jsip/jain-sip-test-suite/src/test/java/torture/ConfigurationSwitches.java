@@ -17,7 +17,7 @@
 *
 *
 */
-package test.torture;
+package torture;
 
 interface ConfigurationSwitches {
     public final static String OUTPUT_PARSED_STRUCTURE =

@@ -1,4 +1,4 @@
-package test.load.leakcheck.busy;
+package load.leakcheck.busy;
 
 import javax.sip.*;
 import javax.sip.address.*;

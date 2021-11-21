@@ -17,7 +17,7 @@
 *
 *
 */
-package test.torture;
+package torture;
 public interface TokenValues {
     public final static String EQUALS = "=";
     public final static String SLASH = "/";

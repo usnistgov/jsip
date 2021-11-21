@@ -1,4 +1,4 @@
-package test.load.subsnotify;
+package load.subsnotify;
 
 public class SubsNotify {
 

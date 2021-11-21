@@ -1,4 +1,4 @@
-package test.load.subsnotify;
+package load.subsnotify;
 
 import java.util.ArrayList;
 import java.util.Properties;

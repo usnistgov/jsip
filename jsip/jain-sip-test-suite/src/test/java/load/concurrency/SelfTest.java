@@ -1,4 +1,4 @@
-package test.load.concurrency;
+package load.concurrency;
 
 import javax.sip.SipProvider;
 

@@ -17,7 +17,7 @@
 *
 *
 */
-package test.torture;
+package torture;
 
 import junit.framework.TestCase;
 

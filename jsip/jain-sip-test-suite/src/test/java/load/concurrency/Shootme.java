@@ -1,4 +1,4 @@
-package test.load.concurrency;
+package load.concurrency;
 import javax.sip.ClientTransaction;
 import javax.sip.Dialog;
 import javax.sip.DialogTerminatedEvent;

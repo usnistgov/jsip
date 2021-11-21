@@ -1,4 +1,4 @@
-package test.load.multidialog;
+package load.multidialog;
 
 import javax.sip.*;
 import javax.sip.address.*;
