@@ -30,7 +30,7 @@
 		</java>
 	</target>
 	
-	<target name="shootmelog" description="Show the  log">
+	<target name="shootmelog" description="Show the log">
 		<java classname="tools.tracesviewer.TracesViewer" fork="true">
 			<arg value="-server_file" />
 			<arg value="shootmelog.txt" />

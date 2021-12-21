@@ -1,0 +1,5 @@
+= TODO List
+
+== test.properties
+
+Change load of file `test.properties` in `Test.java` as it's now embedded in jar from `src/main/resources`
