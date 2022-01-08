@@ -61,3 +61,4 @@ PutObjectStoreDirHere
 .vscode
 .project
 .classpath
+jsip/android-jain-sip-ri/src/main/java/android/*

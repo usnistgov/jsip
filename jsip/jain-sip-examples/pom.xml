@@ -26,6 +26,11 @@
 			<artifactId>jain-sip-ri-13</artifactId>
 			<version>${jain-sip.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>javax.sip</groupId>
+			<artifactId>android-jain-sip-ri-13</artifactId>
+			<version>${jain-sip.version}</version>
+		</dependency>
 		
 		<!-- Logs -->
 		<dependency>

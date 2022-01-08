@@ -9,15 +9,12 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<groupId>javax.sip</groupId>
 	<artifactId>android-jain-sip-ri-13</artifactId>
-	<version>1.3.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>android-jain-sip-ri</name>
 	<url>http://code.google.com/p/jain-sip/</url>
 	<build>
-		<sourceDirectory>../../src/android</sourceDirectory>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -28,6 +25,74 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<configuration>
+							<target name="android-copy">
+								<echo>Copying source for android</echo>
+								<copy encoding="${source.encoding}" outputencoding="${source.encoding}" todir="src/main/java/android/gov/nist">
+									<fileset dir="../jain-sip-ri/src/main/java/gov/nist" />
+								</copy>
+								<copy encoding="${source.encoding}" outputencoding="${source.encoding}" todir="src/main/java/android/gov/nist/javax/sdp">
+									<fileset dir="../jain-sip-ri/src/main/java/gov/nist/javax/sdp" />
+								</copy>
+								<copy encoding="${source.encoding}" outputencoding="${source.encoding}" todir="src/main/java/android/gov/nist/javax/sip">
+									<fileset dir="../jain-sip-ri/src/main/java/gov/nist/javax/sip" />
+								</copy>
+								<copy encoding="${source.encoding}" outputencoding="${source.encoding}" todir="src/main/java/android/javax">
+									<fileset dir="../jain-sip-ri/src/main/java/javax" />
+								</copy>
+								<copy encoding="${source.encoding}" outputencoding="${source.encoding}" todir="src/main/java/android/javax">
+									<fileset dir="../jain-sip-api/src/main/java/javax" />
+								</copy>
+								<!--
+							</target>
+
+							<target name="android-replace" depends="android-copy">
+							-->
+								<echo>Modifying source for android</echo>
+								<replace dir="src/main/java/android/" value="android.javax.sip">
+									<replacetoken>javax.sip</replacetoken>
+								</replace>
+								<replace dir="src/main/java/android/" value="android.javax.sdp">
+									<replacetoken>javax.sdp</replacetoken>
+								</replace>
+								<replace dir="src/main/java/android/" value="android.gov.nist.core">
+									<replacetoken>gov.nist.core</replacetoken>
+								</replace>
+								<replace dir="src/main/java/android/" value="android.gov.nist.javax.sdp">
+									<replacetoken>gov.nist.android.javax.sdp</replacetoken>
+								</replace>
+								<replace dir="src/main/java/android/" value="android.gov.nist.javax.sip">
+									<replacetoken>gov.nist.android.javax.sip</replacetoken>
+								</replace>
+								<replace dir="src/main/java/android/" value=".javax.sip">
+									<replacetoken>.android.javax.sip</replacetoken>
+								</replace>
+								<replace dir="src/main/java/android/javax/sip" value="&quot;javax.sip.message">
+									<replacetoken>"android.javax.sip.message</replacetoken>
+								</replace>
+								<replace dir="src/main/java/android/javax/sip" value="&quot;javax.sip.header">
+									<replacetoken>"android.javax.sip.header</replacetoken>
+								</replace>
+								<replace dir="src/main/java/android/javax/sip" value="&quot;javax.sip.address">
+									<replacetoken>"android.javax.sip.address</replacetoken>
+								</replace>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
@@ -62,7 +127,6 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.8.1</version>
 				<configuration>
-					<sourcepath>${basedir}/../../src/android</sourcepath>
 					<includePackageNames>android.*</includePackageNames>
 				</configuration>
 				<executions>
@@ -97,6 +161,8 @@
 				</executions>
 			</plugin>
 		</plugins>
+
+		<!--
 		<resources>
 			<resource>
 				<directory>target</directory>
@@ -112,6 +178,7 @@
 				</excludes>
 			</resource>
 		</resources>
+	-->
 	</build>
 
 	<profiles>
@@ -142,11 +209,42 @@
 	</profiles>
 
 	<dependencies>
+		<!-- Uncomment the following if you're using Java SDK version 11 and above -->
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-core</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.14</version>
+			<version>1.2.15</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>com.sun.jmx</groupId>
+					<artifactId>jmxri</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jdmk</groupId>
+					<artifactId>jmxtools</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.jms</groupId>
+					<artifactId>jms</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 

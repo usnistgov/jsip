@@ -59,6 +59,15 @@
 		<module>jain-sip-api</module>
 		<module>jain-sip-ri</module>
 		<module>jain-sip-sctp</module>
+		<module>android-jain-sip-ri</module>
+		
+		<module>jain-sip-examples</module>
+		<module>jain-sip-test-suite</module>
+		<module>tools/tracesviewer</module>
+		<module>tools/sniffer</module>
+		<module>performance/uas</module>
+		<module>performance/b2bua</module>
+		
 	</modules>
 
 	<properties>
