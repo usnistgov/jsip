@@ -31,8 +31,6 @@ import javax.sip.message.MessageFactory;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
-import test.unit.gov.nist.javax.sip.stack.tls.TlsTest;
-
 /**
  * This class is a UAC template. Shootist is the guy that shoots and shootme
  * is the guy that gets shot.
@@ -321,8 +319,8 @@ public class Shootme implements SipListener {
     }
 
     public static void main(String args[]) {
-    	System.setProperty( "javax.net.ssl.keyStore",  TlsTest.class.getResource("testkeys").getPath() );
-        System.setProperty( "javax.net.ssl.trustStore", TlsTest.class.getResource("testkeys").getPath() );
+    	System.setProperty( "javax.net.ssl.keyStore", Shootme.class.getResource("testkeys").getPath() );
+        System.setProperty( "javax.net.ssl.trustStore", Shootme.class.getResource("testkeys").getPath() );
         System.setProperty( "javax.net.ssl.keyStorePassword", "passphrase" );
         System.setProperty( "javax.net.ssl.keyStoreType", "jks" );
         new Shootme().init();

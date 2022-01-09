@@ -62,3 +62,6 @@ PutObjectStoreDirHere
 .project
 .classpath
 jsip/android-jain-sip-ri/src/main/java/android/*
+jsip/jain-sip-test-suite/logs/*
+jsip/jain-sip-test-suite/notifier*.txt
+jsip/jain-sip-test-suite/subscriber*.txt

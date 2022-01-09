@@ -10,8 +10,6 @@ import javax.sip.address.*;
 import javax.sip.header.*;
 import javax.sip.message.*;
 
-import test.unit.gov.nist.javax.sip.stack.tls.TlsTest;
-
 import java.io.IOException;
 import java.security.cert.Certificate;
 import java.util.*;
