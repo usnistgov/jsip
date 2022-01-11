@@ -1,0 +1,14 @@
+= Jain Sip Test Suite
+
+== Notes
+
+This is a work in progress.  It is currently open to public review. Your
+comments are solicited.
+
+== Authors
+
+The TCK was written by M. Ranganathan (factory tests)  and Emil Ivov (stack tests and GUI)
+
+== Troubleshooting
+
+For ubuntu user (and probably other linux users), make sure to install libsctp-dev packages. Run `apt-get isntall libsctp-dev` to be sure the package is installed.

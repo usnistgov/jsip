@@ -94,7 +94,7 @@ public class TestHarness extends TestCase {
 
 //            tckProperties.load(TestHarness.class.getClassLoader()
 //                    .getResourceAsStream("tck.properties"));
-            tckProperties.load(new FileInputStream("tck.properties"));
+            tckProperties.load(new FileInputStream("src/test/resources/tck.properties"));
             Enumeration props = tckProperties.propertyNames();
             while (props.hasMoreElements()) {
                 String propname = (String) props.nextElement();

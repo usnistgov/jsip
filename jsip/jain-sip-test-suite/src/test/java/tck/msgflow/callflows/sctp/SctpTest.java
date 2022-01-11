@@ -40,11 +40,10 @@ import tck.msgflow.callflows.ScenarioHarness;
 /**
  * @author M. Ranganathan
  *
- * JvB: copied from TLS test
- * Note: SCTP only works with Java7 on Linux
+ *         JvB: copied from TLS test
+ *         Note: SCTP only works with Java7 on Linux
  */
 public class SctpTest extends ScenarioHarness implements SipListener {
-
 
     protected Shootist shootist;
 

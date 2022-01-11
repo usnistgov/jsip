@@ -40,27 +40,6 @@ public class InviteTest extends TestCase {
 
     }
 
-    public void setUp() {
-
-        try {
-            super.setUp();
-            
-
-        } catch (Exception ex) {
-            fail("unexpected exception ");
-        }
-    }
-
-    public void tearDown() {
-        try {
-            
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            logger.error("unexpected exception", ex);
-            fail("unexpected exception ");
-        }
-    }
-
     public void testSendInvite() throws Exception {
         try {
            
@@ -89,8 +68,11 @@ public class InviteTest extends TestCase {
             shootmeUa.checkState();
             shootist.checkState();
             shootist.stop();
+            logger.info("-----------------------> shoootist stopped");
             shootmeUa.stop();
+            logger.info("-----------------------> shootmeUa stopped");
             proxy.stop();
+            logger.info("-----------------------> proxy stopped");
         } finally {
            
         }
