@@ -485,7 +485,7 @@ public class MessageFactoryTest extends FactoryTestHarness {
 		request.setContent( new String(content,"ISO-8859-1"), 
 				(ContentTypeHeader) request.getHeader(ContentTypeHeader.NAME) );
 		
-		assertEquals( 2, request.getRawContent().length );		
+		assertEquals(content.length, request.getRawContent().length );		
 	} catch (Exception t) {
 	  t.printStackTrace();
 	  fail( "ParseException", t );
