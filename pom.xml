@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>javax.sip</groupId>
-	<artifactId>jain-sip-13</artifactId>
+	<artifactId>jain-sip</artifactId>
 	<version>1.3.0-SNAPSHOT</version>
 
 	<packaging>pom</packaging>
 
-	<name>jain-sip-13</name>
+	<name>jain-sip</name>
 	<description>JAIN SIP Parent pom</description>
 	<url>http://code.google.com/p/jain-sip/</url>
 

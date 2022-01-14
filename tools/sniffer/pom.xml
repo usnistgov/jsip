@@ -18,13 +18,13 @@
 	<dependencies>
 		<dependency>
 			<groupId>javax.sip</groupId>
-			<artifactId>jain-sip-api-13</artifactId>
+			<artifactId>jain-sip-api</artifactId>
 			<version>${jain-sip.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.sip</groupId>
-			<artifactId>jain-sip-ri-13</artifactId>
+			<artifactId>jain-sip-ri</artifactId>
 			<version>${jain-sip.version}</version>
 			<scope>provided</scope>
 		</dependency>
