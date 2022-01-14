@@ -1,3 +1,5 @@
+= Maven eployment
+
 To deploy maven 2 artifacts to maven2-repository on java.net
 (Note: you shall request Maven2 Publisher role on this project), 
 do the following

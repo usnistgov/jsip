@@ -61,8 +61,12 @@ PutObjectStoreDirHere
 .vscode
 .project
 .classpath
-jsip/android-jain-sip-ri/src/main/java/android/*
-jsip/jain-sip-test-suite/logs/*
+
+#ignoring src from android as they are smiply a copy
+android-jain-sip-ri/src/main/java/android/*
+
+#ignoring generated logs from tests
+jain-sip-test-suite/logs/*
 **/notifier*.txt
 **/subscriber*.txt
 **/server_*.txt
