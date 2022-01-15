@@ -1,0 +1,38 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>colorado.edu</groupId>
+	<artifactId>sniffer</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<properties>
+		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+		<tracesviewer.version>1.0.0-SNAPSHOT</tracesviewer.version>
+		<jain-sip.version>1.3.0-SNAPSHOT</jain-sip.version>
+		<maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.source>11</maven.compiler.source>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>javax.sip</groupId>
+			<artifactId>jain-sip-api</artifactId>
+			<version>${jain-sip.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.sip</groupId>
+			<artifactId>jain-sip-ri</artifactId>
+			<version>${jain-sip.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>gov.nist</groupId>
+			<artifactId>tracesviewer</artifactId>
+			<version>${tracesviewer.version}</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+</project>
