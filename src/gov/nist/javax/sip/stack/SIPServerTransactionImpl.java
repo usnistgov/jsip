@@ -2063,7 +2063,6 @@ public class SIPServerTransactionImpl extends SIPTransactionImpl implements SIPS
             pendingReliableResponseAsBytes = null;
             pendingReliableResponseContentType = null;
             pendingReliableResponseMethod = null;
-            pendingSubscribeTransaction = null;
             provisionalResponseSem = null;
             retransmissionAlertTimerTask = null;
             requestOf = null;

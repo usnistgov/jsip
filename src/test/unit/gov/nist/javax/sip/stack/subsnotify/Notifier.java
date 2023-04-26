@@ -47,12 +47,13 @@ public class Notifier implements SipListener {
 
     private boolean handleSubscribe = true;
 
-
-
-   
     protected static final String usageString = "java "
             + "examples.shootist.Shootist \n"
             + ">>>> is your class path set to the root?";
+
+    private boolean inDialogSubscribeRequestUriMatches = false;
+
+    private int subscribeResponseCode = Response.ACCEPTED;
 
     private static void usage() {
         logger.info(usageString);
@@ -92,26 +93,36 @@ public class Notifier implements SipListener {
                     logger.info("Cannot find event header.... dropping request.");
                     return;
                 }
-    
+
+
+
+
+
                 // Always create a ServerTransaction, best as early as possible in the code
                 Response response = null;
                 ServerTransaction st = requestEvent.getServerTransaction();
                 if (st == null) {
                     st = sipProvider.getNewServerTransaction(request);
                 }
-                response = messageFactory.createResponse(202, request);
+                response = messageFactory.createResponse(subscribeResponseCode, request);
                 ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
                 // Check if it is an initial SUBSCRIBE or a refresh / unsubscribe
                 if(((MessageExt)request).getToHeader().getTag() == null) {
 	                toTag = Integer.toHexString( (int) (Math.random() * Integer.MAX_VALUE) );                
 	                toHeader.setTag(toTag);
 	                // Sanity check: to header should not ahve a tag. Else the dialog
+                } else {
+                    if(request.getRequestURI().toString().contains("id=not")) {
+                        inDialogSubscribeRequestUriMatches = true;
+                    }
                 }
     
                 // Both 2xx response to SUBSCRIBE and NOTIFY need a Contact
                 Address address = addressFactory.createAddress("Notifier <sip:127.0.0.1>");
                 ((SipURI)address.getURI()).setPort( udpProvider.getListeningPoint("udp").getPort() );
                 ContactHeader contactHeader = headerFactory.createContactHeader(address);
+                // Mark the contact header, to check that the remote contact is updated
+                ((SipURI)contactHeader.getAddress().getURI()).setParameter("id","not");
                 response.addHeader(contactHeader);
     
                 // Expires header is mandatory in 2xx responses to SUBSCRIBE
@@ -342,4 +353,11 @@ public class Notifier implements SipListener {
         handleSubscribe = b;
     }
 
+    public void setSubscribeResponseCode(int subscribeResponseCode) {
+        this.subscribeResponseCode = subscribeResponseCode;
+    }
+
+    public boolean checkState() {
+        return inDialogSubscribeRequestUriMatches;
+    }
 }

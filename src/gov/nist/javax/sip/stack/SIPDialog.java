@@ -3401,8 +3401,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                                         .getState() == DialogState.CONFIRMED
                                         && cseqMethod
                                                 .equals(Request.SUBSCRIBE)
-                                        && this.pendingRouteUpdateOn202Response && sipResponse
-                                        .getStatusCode() == Response.ACCEPTED))) {
+                                        && this.pendingRouteUpdateOn202Response && (sipResponse
+                                        .getStatusCode() == Response.ACCEPTED || sipResponse.getStatusCode() == Response.OK)))) {
                             if (this.getState() != DialogState.CONFIRMED) {
                                 setRemoteTag(sipResponse.getToTag());
                                 this
@@ -3425,7 +3425,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                              */
 
                             if (cseqMethod.equals(Request.SUBSCRIBE)
-                                    && sipResponse.getStatusCode() == Response.ACCEPTED
+                                    && (sipResponse
+                                    .getStatusCode() == Response.ACCEPTED || sipResponse.getStatusCode() == Response.OK)
                                     && this.pendingRouteUpdateOn202Response) {
                                 setRemoteTag(sipResponse.getToTag());
                                 this.addRoute(sipResponse);
