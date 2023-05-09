@@ -2066,6 +2066,7 @@ public class SIPServerTransactionImpl extends SIPTransactionImpl implements SIPS
             provisionalResponseSem = null;
             retransmissionAlertTimerTask = null;
             requestOf = null;
+            // Do not set pendingSubscribeTransaction to null because it is used after cleanUpOnTimer is executed
         }
     }
 
