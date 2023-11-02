@@ -318,6 +318,9 @@ public class UDPMessageChannel extends MessageChannel implements
 
                 logger.logError(
                         "Error while processing incoming UDP packet" + Arrays.toString(packet.getData()), e);
+            } catch (StackOverflowError e) {
+                logger.logError("StackOverflowError while processing incoming UDP packet" + Arrays.toString(packet.getData()));
+                logger.logException(e);
             }
             this.incomingPacket = null;
             if (sipStack.threadPoolSize == -1) {
