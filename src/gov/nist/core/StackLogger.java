@@ -79,9 +79,9 @@ public interface StackLogger extends LogLevels {
      * Log an error message.
      *
      * @param message
-     * @param ex
+     * @param throwable
      */
-    public void logError(String message, Exception ex);
+    public void logError(String message, Throwable throwable);
     /**
      * Log a warning mesasge.
      *

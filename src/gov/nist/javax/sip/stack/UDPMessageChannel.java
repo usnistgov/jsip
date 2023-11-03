@@ -314,7 +314,7 @@ public class UDPMessageChannel extends MessageChannel implements
             // Process the packet. Catch and log any exception we may throw.
             try {
                 processIncomingDataPacket(packet);
-            } catch (Exception e) {
+            } catch (Throwable e) {
 
                 logger.logError(
                         "Error while processing incoming UDP packet" + Arrays.toString(packet.getData()), e);
