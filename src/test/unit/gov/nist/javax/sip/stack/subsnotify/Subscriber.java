@@ -168,7 +168,6 @@ public class Subscriber implements SipListener {
 			try {
 				subscribe = subscriberDialog.createRequest(Request.SUBSCRIBE);
 				subscribe.addHeader(headerFactory.createExpiresHeader(0));
-				subscribe.setRequestURI(sipURI);
 				// Create an event header for the subscription.
 	            EventHeader eventHeader = headerFactory.createEventHeader("foo");
 	            eventHeader.setEventId("foo");
