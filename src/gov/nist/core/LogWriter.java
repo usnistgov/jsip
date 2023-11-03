@@ -418,11 +418,11 @@ public class LogWriter implements StackLogger {
      * Log an error message.
      *
      * @param message
-     * @param ex
+     * @param throwable
      */
-    public void logError(String message, Exception ex) {
+    public void logError(String message, Throwable throwable) {
         Logger logger = this.getLogger();
-        logger.error(message, ex);
+        logger.error(message, throwable);
 
     }
 

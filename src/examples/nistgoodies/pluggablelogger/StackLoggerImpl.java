@@ -80,7 +80,7 @@ public class StackLoggerImpl implements StackLogger {
         logger.error(string);
     }
 
-    public void logError(String string, Exception exception) {
+    public void logError(String string, Throwable exception) {
       logger.error(string,exception);
 
     }
