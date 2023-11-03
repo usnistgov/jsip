@@ -86,9 +86,9 @@ public class CommonLogger implements StackLogger{
 		logger().logError(message);
 	}
 	
-	public void logError(String message, Exception ex) {
+	public void logError(String message, Throwable throwable) {
 		
-		logger().logError(message, ex);
+		logger().logError(message, throwable);
 	}
 	
 	public void logException(Throwable ex) {
