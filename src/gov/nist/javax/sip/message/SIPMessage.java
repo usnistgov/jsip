@@ -1429,7 +1429,11 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
             } else if (content instanceof byte[]) {
                 length = ((byte[]) content).length;
             } else {
-                length = content.toString().length();
+                try {
+                    length = content.toString().getBytes( getCharset() ).length;
+                } catch (UnsupportedEncodingException ex) {
+                    InternalErrorHandler.handleException(ex);
+                }
             }
         }
 
